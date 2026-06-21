@@ -1,0 +1,2 @@
+Coloque aqui suas imagens (prints dos projetos, banners e og.png).
+Referencie como assets/img/nome.png (ou ../assets/img/nome.png nas paginas de projeto).

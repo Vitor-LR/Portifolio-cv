@@ -1,0 +1,102 @@
+============================================================
+GUIA — LINKS E IMAGENS NAS PÁGINAS DE PROJETO
+Portfólio Vitor Lombard Rocha
+============================================================
+
+Este guia vale para TODAS as páginas dentro da pasta "projetos/"
+(gotask-api.html, observastack.html, datamart-sql.html,
+sites-marcas.html, urlshort.html e qualquer nova que você criar).
+
+Os números de linha citados são da página urlshort.html, mas a
+estrutura é a mesma em todas — basta procurar o mesmo trecho.
+
+ANTES DE COMEÇAR:
+- Crie a pasta:  assets/img/
+- Coloque seus prints/imagens lá dentro.
+- Como as páginas de projeto ficam dentro de "projetos/", o caminho
+  das imagens sempre começa com "../", assim:  ../assets/img/nome.png
+
+
+------------------------------------------------------------
+1) LINK DO BOTÃO "VER PROJETO" (e "VER CÓDIGO")
+------------------------------------------------------------
+Esses botões ficam DENTRO da página do projeto e aparecem em DOIS
+lugares: no topo (hero) e na barra lateral. Troque os dois.
+
+"Ver projeto"  -> está com  href="#"
+  - linha 90  (topo)
+  - linha 200 (barra lateral)
+
+  ANTES:
+    <a href="#" target="_blank" rel="noopener" class="btn btn--primary">
+  DEPOIS:
+    <a href="https://meu-projeto-publicado.com" target="_blank" rel="noopener" class="btn btn--primary">
+
+"Ver código"  -> está com  href="https://github.com/"
+  - linha 93  (topo)
+  - linha 203 (barra lateral)
+
+  Troque pela URL real do repositório, ex.:
+    href="https://github.com/Vitor-LR/urlshort"
+
+OBS IMPORTANTE:
+- Esses botões "Ver projeto / Ver código" são da PÁGINA do estudo de caso.
+- Os botões "Código" e "Demonstração" que aparecem no CARD (na home e em
+  "todos os projetos") são controlados no arquivo assets/js/projects.js,
+  nos campos "codigo" e "demo" de cada projeto. São coisas diferentes.
+
+
+------------------------------------------------------------
+2) AS SCREENSHOTS (galeria)
+------------------------------------------------------------
+Ficam na seção "Screenshots" (linhas 159 a 162). Cada uma é um
+<figure> com um placeholder de texto. Troque o placeholder por uma
+imagem <img>:
+
+  ANTES:
+    <figure><span class="ph">[ print 01 — rotas ]</span></figure>
+  DEPOIS:
+    <figure><img src="../assets/img/urlshort-rotas.png" alt="Rotas da API URLShort"></figure>
+
+Faça isso nas 4 (ou quantas quiser).
+
+ELAS ENCAIXAM CERTINHO? Sim. O CSS já tem object-fit: cover, então a
+imagem preenche o quadro (formato 16/10) automaticamente, sem deformar.
+"cover" preenche e corta o que sobra nas bordas. Se algum print for
+muito diferente desse formato e você não quiser cortar nada, é possível
+mudar para mostrar a imagem inteira (peça o ajuste).
+
+DICA: preencha sempre o alt="..." com uma descrição curta — ajuda na
+acessibilidade e no SEO.
+
+
+------------------------------------------------------------
+3) O CARD GRANDE COM O TÍTULO (a capa do projeto)
+------------------------------------------------------------
+É a faixa grande (.case-banner) que hoje mostra um texto, ex.:
+"⇄ URLShort · go + redis" (linha 100).
+
+Para colocar uma imagem, troque o <span> por uma <img>:
+
+  ANTES:
+    <span class="banner-glyph">⇄ URLShort · go + redis</span>
+  DEPOIS:
+    <img src="../assets/img/urlshort-banner.png" alt="Capa do projeto URLShort">
+
+O CSS já cuida do resto (formato 21/9, cantos arredondados, object-fit:
+cover). Se você NÃO colocar imagem, o texto continua aparecendo como
+está — fica a seu critério.
+
+
+------------------------------------------------------------
+RESUMO RÁPIDO
+------------------------------------------------------------
+- Pasta das imagens:        assets/img/
+- Caminho dentro da página: ../assets/img/nome.png
+- "Ver projeto":            href="#"  -> URL real (linhas 90 e 200)
+- "Ver código":             github.com/ -> URL do repo (linhas 93 e 203)
+- Screenshots:              troque <span class="ph"> por <img> (linhas 159-162)
+- Capa grande:              troque <span class="banner-glyph"> por <img> (linha 100)
+- Botões do CARD (home):    arquivo assets/js/projects.js (campos "codigo" e "demo")
+
+============================================================

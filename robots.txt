@@ -1,0 +1,7 @@
+# robots.txt — Portfólio Vitor Lombard Rocha
+# TROCAR "seudominio.com" pela URL real ao publicar.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://seudominio.com/sitemap.xml
