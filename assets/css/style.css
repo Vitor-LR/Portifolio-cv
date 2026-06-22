@@ -822,11 +822,17 @@ body::before {
 /* "Ler mais": recorta o texto em ~10 linhas (quando passa disso) com um
    leve fade, e mostra um botão no estilo do site para abrir o restante.
    O JS (about-readmore.js) controla quando aplicar e o limite de linhas. */
-.about-text-body { position: relative; }
-.about-text-body.clamped {
+.about-text-body {
+    position: relative;
     overflow: hidden;
+    transition: max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.about-text-body.clamped {
     -webkit-mask-image: linear-gradient(to bottom, #000 82%, transparent);
     mask-image: linear-gradient(to bottom, #000 82%, transparent);
+}
+@media (prefers-reduced-motion: reduce) {
+    .about-text-body { transition: none; }
 }
 .about-more {
     margin-top: 0.9rem;
@@ -2513,8 +2519,18 @@ body::before {
 }
 
 /* ---- Lightbox (janela ampliada das screenshots) ---- */
-.gallery figure { cursor: zoom-in; }
-.gallery figure img { -webkit-touch-callout: none; }
+.gallery figure {
+    cursor: zoom-in;
+    -webkit-touch-callout: none;            /* iOS: sem menu de "abrir/copiar/baixar" */
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: none;                     /* o "segurar p/ espiar" é tratado por nós */
+}
+.gallery figure img {
+    -webkit-touch-callout: none;
+    -webkit-user-drag: none;
+    user-select: none;
+}
 
 .lightbox {
     position: fixed;

@@ -42,22 +42,43 @@
         return lh;
     }
 
+    var DURATION = 450;   // casa com a transição do CSS (max-height)
+
+    function maxHpx() { return lineHeightPx() * MAX_LINES; }
+
+    // roda cb quando a transição de max-height termina (com fallback de tempo)
+    function onEnd(cb) {
+        var done = false;
+        function h(e) {
+            if (e && e.propertyName && e.propertyName !== 'max-height') return;
+            if (done) return;
+            done = true;
+            body.removeEventListener('transitionend', h);
+            cb();
+        }
+        body.addEventListener('transitionend', h);
+        setTimeout(h, DURATION + 80);
+    }
+
     function evaluate() {
-        // mede no estado completo
+        // mede no estado completo, SEM animar (resize / carregamento de fontes)
+        body.style.transition = 'none';
         body.classList.remove('clamped');
         body.style.maxHeight = '';
 
         // no layout largo (texto ao lado do card) não recorta
         if (!mqStack.matches) {
             btn.style.display = 'none';
+            body.style.transition = '';
             return;
         }
 
-        var maxH = lineHeightPx() * MAX_LINES;
+        var maxH = maxHpx();
         var needsClamp = body.scrollHeight > maxH + 4;
 
         if (!needsClamp) {
-            btn.style.display = 'none';      // cabe em ≤10 linhas: sem "ler mais"
+            btn.style.display = 'none';      // cabe em ≤MAX_LINES: sem "ler mais"
+            body.style.transition = '';
             return;
         }
 
@@ -65,7 +86,28 @@
         if (!expanded) {
             body.style.maxHeight = maxH + 'px';
             body.classList.add('clamped');
+        } else {
+            body.style.maxHeight = 'none';
         }
+        body.offsetHeight;               // reflow
+        body.style.transition = '';      // reativa a animação p/ os próximos cliques
+    }
+
+    function expand() {
+        body.classList.remove('clamped');            // tira o fade ao abrir
+        body.style.maxHeight = maxHpx() + 'px';      // ponto de partida
+        body.offsetHeight;                           // reflow
+        body.style.maxHeight = body.scrollHeight + 'px';
+        onEnd(function () {
+            if (expanded) body.style.maxHeight = 'none';   // libera p/ reflow/resize
+        });
+    }
+
+    function collapse() {
+        body.style.maxHeight = body.scrollHeight + 'px';   // fixa ponto de partida
+        body.classList.add('clamped');                     // fade ao fechar
+        body.offsetHeight;                                  // reflow
+        body.style.maxHeight = maxHpx() + 'px';
     }
 
     btn.addEventListener('click', function () {
@@ -74,7 +116,7 @@
         btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
         var label = btn.querySelector('.about-more-label');
         if (label) label.textContent = expanded ? 'ler menos' : 'ler mais';
-        evaluate();
+        if (expanded) expand(); else collapse();
     });
 
     evaluate();

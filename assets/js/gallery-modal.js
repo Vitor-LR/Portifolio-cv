@@ -53,12 +53,14 @@
         fig.setAttribute('role', 'button');
         fig.setAttribute('aria-label', 'Ampliar: ' + (img.alt || 'screenshot'));
 
-        // MOUSE: nada abre no pressionar; um timer abre o "espiar" após o delay
+        img.draggable = false;
+
+        // PRESSIONAR e SEGURAR (mouse, TOQUE ou caneta): um timer abre o modo
+        // "espiar" após o delay. Soltar antes do delay = clique (abre e permanece).
         fig.addEventListener('pointerdown', function (e) {
             lastType = e.pointerType;
-            if (e.pointerType !== 'mouse') return;   // toque/caneta → tratados no click
-            if (e.button !== 0) return;              // só botão principal
-            e.preventDefault();
+            if (e.pointerType === 'mouse' && e.button !== 0) return;   // só botão principal
+            e.preventDefault();          // evita seleção/arraste e o menu nativo do toque
             pressing = true;
             peeking = false;
             currentImg = img;
@@ -68,15 +70,9 @@
             }, HOLD_DELAY);
         });
 
-        // se arrastar pra fora antes de abrir, cancela (não é clique nem espiar)
+        // se arrastar/sair antes de abrir, cancela (mouse; no toque há captura implícita)
         fig.addEventListener('pointerleave', function () {
             if (pressing && !peeking) { clearTimeout(holdTimer); pressing = false; }
-        });
-
-        // TOQUE / CANETA: um toque abre e permanece
-        fig.addEventListener('click', function () {
-            if (lastType === 'mouse') return;        // mouse já tratado nos pointer events
-            open(img);
         });
 
         // TECLADO: Enter/Espaço abre (permanece)
@@ -84,10 +80,8 @@
             if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(img); }
         });
 
-        // evita menu de contexto / "salvar imagem" durante o segurar
-        fig.addEventListener('contextmenu', function (e) {
-            if (pressing || isOpen()) e.preventDefault();
-        });
+        // nunca mostra o menu nativo (abrir em nova guia / copiar / baixar) na miniatura
+        fig.addEventListener('contextmenu', function (e) { e.preventDefault(); });
     });
 
     function endPress() {
