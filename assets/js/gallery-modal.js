@@ -37,11 +37,13 @@
         lbImg.src = img.currentSrc || img.src;
         lbImg.alt = img.alt || '';
         lb.classList.add('open');
+        lb.classList.toggle('peeking', peeking);   // só "espiar" bloqueia o menu na ampliada
         lb.setAttribute('aria-hidden', 'false');
         document.documentElement.style.overflow = 'hidden';
     }
     function close() {
         lb.classList.remove('open');
+        lb.classList.remove('peeking');
         lb.setAttribute('aria-hidden', 'true');
         document.documentElement.style.overflow = '';
     }
@@ -129,12 +131,12 @@
         if (e.key === 'Escape' && isOpen()) close();
     });
 
-    // bloqueia o menu nativo (abrir em nova guia / copiar / baixar imagem) tanto
-    // na miniatura quanto na imagem ampliada — em qualquer navegador/dispositivo
+    // menu nativo: NUNCA na miniatura; na imagem ampliada só é bloqueado
+    // durante o "espiar" (com a imagem aberta por toque, o menu é permitido)
     document.addEventListener('contextmenu', function (e) {
         var t = e.target;
-        if (t && t.closest && (t.closest('.gallery figure') || t.closest('.lightbox'))) {
-            e.preventDefault();
-        }
+        if (!t || !t.closest) return;
+        if (t.closest('.gallery figure')) { e.preventDefault(); return; }
+        if (t.closest('.lightbox') && lb.classList.contains('peeking')) e.preventDefault();
     });
 })();

@@ -2574,10 +2574,14 @@ body::before {
     max-width: 100%;
     max-height: calc(88vh - 20px);
     border-radius: 9px;
-    user-select: none;
-    -webkit-user-select: none;
     -webkit-user-drag: none;
+}
+/* durante o "espiar" (segurar a miniatura) o menu nativo fica bloqueado também
+   na imagem ampliada; já com a imagem aberta por TOQUE, o menu é permitido */
+.lightbox.peeking .lightbox-frame img {
     -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .lightbox-close {
