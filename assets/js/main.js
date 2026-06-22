@@ -260,7 +260,7 @@
                 div.className = 'line ' + cls;
                 term.appendChild(div);
 
-                if (!txt) { div.innerHTML = '&nbsp;'; li++; setTimeout(typeLine, 120); return; }
+                if (!txt) { div.innerHTML = '&nbsp;'; li++; setTimeout(typeLine, 60); return; }
 
                 let ci = 0;
                 (function typeChar() {
@@ -268,21 +268,41 @@
                     div.textContent = txt.slice(0, ci);
                     ci++;
                     if (ci <= txt.length) {
-                        setTimeout(typeChar, 16 + Math.random() * 26);
+                        setTimeout(typeChar, 8 + Math.random() * 13);
                     } else {
                         li++;
-                        setTimeout(typeLine, 170);
+                        setTimeout(typeLine, 85);
                     }
                 })();
             }
 
-            // Ao voltar a ficar visível, garante o terminal completo.
+            // Ao voltar a ficar visível (troca de aba), garante o terminal completo.
             document.addEventListener('visibilitychange', function () {
                 if (document.visibilityState === 'visible') finishNow();
             });
 
-            // começa quando o hero estiver visível (ou logo após carregar)
-            setTimeout(typeLine, 600);
+            // Começa a digitar só quando o terminal aparece na tela; se o usuário
+            // rolar para fora antes de terminar, completa na hora. Assim o terminal
+            // não fica "crescendo" enquanto ele lê outra seção (no mobile isso fazia
+            // o conteúdo de baixo ficar descendo até a animação acabar).
+            let started = false;
+            function startTyping() {
+                if (started || finished) return;
+                started = true;
+                setTimeout(typeLine, 250);
+            }
+
+            if ('IntersectionObserver' in window) {
+                const termObs = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (e) {
+                        if (e.isIntersecting) startTyping();
+                        else if (started) finishNow();   // saiu da tela → completa já
+                    });
+                });
+                termObs.observe(term);
+            } else {
+                setTimeout(startTyping, 600);   // fallback sem observer
+            }
         }
     }
 

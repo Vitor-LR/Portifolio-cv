@@ -127,12 +127,16 @@
                     var m = date.getMonth();
                     if (m !== lastMonth) {
                         lastMonth = m;
-                        var mt = document.createElementNS(SVGNS, 'text');
-                        mt.setAttribute('x', LEFT + c * STEP);
-                        mt.setAttribute('y', TOP - 5);
-                        mt.setAttribute('class', 'gc-label');
-                        mt.textContent = MONTHS[m];
-                        svg.appendChild(mt);
+                        // não rotula o primeiro mês (coluna 0): ele é parcial e
+                        // ficaria espremido na borda esquerda — ex.: o "Dez".
+                        if (c > 0) {
+                            var mt = document.createElementNS(SVGNS, 'text');
+                            mt.setAttribute('x', LEFT + c * STEP);
+                            mt.setAttribute('y', TOP - 5);
+                            mt.setAttribute('class', 'gc-label');
+                            mt.textContent = MONTHS[m];
+                            svg.appendChild(mt);
+                        }
                     }
                 }
             }
