@@ -26,10 +26,11 @@
     var HOLD_DELAY = 450;
 
     var holdTimer = null;
-    var pressing = false;   // botão do mouse pressionado sobre uma figure
+    var pressing = false;   // ponteiro pressionado sobre uma figure
     var peeking = false;    // abriu via "segurar" (deve fechar ao soltar)
     var lastType = '';      // tipo do último ponteiro (mouse/touch/pen)
     var currentImg = null;  // imagem da figure pressionada
+    var startX = 0, startY = 0;   // posição inicial do toque (p/ detectar arraste)
 
     function open(img) {
         lbImg.src = img.currentSrc || img.src;
@@ -60,13 +61,16 @@
         fig.addEventListener('pointerdown', function (e) {
             lastType = e.pointerType;
             if (e.pointerType === 'mouse' && e.button !== 0) return;   // só botão principal
-            e.preventDefault();          // evita seleção/arraste e o menu nativo do toque
+            if (e.pointerType === 'mouse') e.preventDefault();         // mouse: evita seleção/arraste
+            // (no toque NÃO usamos preventDefault, senão a rolagem da página trava)
             pressing = true;
             peeking = false;
             currentImg = img;
+            startX = e.clientX;
+            startY = e.clientY;
             clearTimeout(holdTimer);
             holdTimer = setTimeout(function () {
-                if (pressing) { peeking = true; open(img); }   // segurou → espiar
+                if (pressing) { peeking = true; open(img); }   // segurou parado → espiar
             }, HOLD_DELAY);
         });
 
@@ -95,6 +99,17 @@
         pressing = false;
         peeking = false;
     }
+    // se o dedo se mover além de um limiar antes de abrir, é ROLAGEM/arraste →
+    // cancela o "segurar" (não abre o screenshot ao descer a página)
+    window.addEventListener('pointermove', function (e) {
+        if (!pressing || peeking) return;
+        var dx = e.clientX - startX, dy = e.clientY - startY;
+        if (dx * dx + dy * dy > 100) {        // ~10px de tolerância
+            clearTimeout(holdTimer);
+            pressing = false;
+        }
+    }, { passive: true });
+
     window.addEventListener('pointerup', endPress);
     window.addEventListener('pointercancel', function () {
         if (!pressing) return;

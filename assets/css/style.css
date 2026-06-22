@@ -2524,7 +2524,7 @@ body::before {
     -webkit-touch-callout: none;            /* iOS: sem menu de "abrir/copiar/baixar" */
     -webkit-user-select: none;
     user-select: none;
-    touch-action: none;                     /* o "segurar p/ espiar" é tratado por nós */
+    touch-action: pan-y;                    /* permite rolar a página; o "segurar" é nosso */
 }
 .gallery figure img {
     -webkit-touch-callout: none;
