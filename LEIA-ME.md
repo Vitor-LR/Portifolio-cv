@@ -130,3 +130,6 @@ python3 -m http.server 8000
 Todas as cores estão em variáveis no topo do `style.css`, dentro de `:root`
 (e do bloco `[data-theme="light"]` para o tema claro). Para mudar o destaque,
 altere `--accent` e `--accent-2` (e o `--gradient`).
+
+
+//before claude
