@@ -18,6 +18,7 @@
     if (!lb) return;
     var lbImg = lb.querySelector('img');
     var closeBtn = lb.querySelector('.lightbox-close');
+    if (lbImg) lbImg.draggable = false;
 
     /* ===== TEMPO CONFIGURÁVEL =====
        Quantos milissegundos é preciso SEGURAR antes do modo "espiar"
@@ -126,5 +127,14 @@
     });
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && isOpen()) close();
+    });
+
+    // bloqueia o menu nativo (abrir em nova guia / copiar / baixar imagem) tanto
+    // na miniatura quanto na imagem ampliada — em qualquer navegador/dispositivo
+    document.addEventListener('contextmenu', function (e) {
+        var t = e.target;
+        if (t && t.closest && (t.closest('.gallery figure') || t.closest('.lightbox'))) {
+            e.preventDefault();
+        }
     });
 })();
