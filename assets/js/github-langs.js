@@ -12,7 +12,7 @@
        1) cache fresco  → usa direto, sem nova requisição;
        2) API falhou    → usa o último cache salvo (mesmo vencido);
        3) sem cache     → usa um fallback estático (abaixo).
-   - Cores no padrão do GitHub Linguist; o restante vira "Outros".
+   - Cores no padrão do GitHub Linguist; mostra as 6 linguagens mais usadas.
    - Usuário definido no data-user de #gh-langs (= "Vitor-LR").
    ============================================================ */
 (function () {
@@ -102,18 +102,40 @@
         return;
     }
 
-    // 2) busca na API; em falha usa cache (mesmo vencido) ou o fallback estático
+    // 2) busca na API; em falha usa cache (mesmo vencido) ou o fallback estático.
+    //    Método: lista os repositórios e, para cada um (ignorando forks), soma
+    //    os BYTES por linguagem do endpoint /languages — mesma conta do GitHub,
+    //    então o JavaScript (mesmo secundário) também é contabilizado.
+    var MAX_REPOS = 40;   // teto de repositórios consultados (segura o rate-limit)
+
     fetch('https://api.github.com/users/' + encodeURIComponent(user) + '/repos?per_page=100&type=owner&sort=pushed')
         .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
         .then(function (repos) {
             if (!Array.isArray(repos) || !repos.length) throw new Error('vazio');
 
+            var urls = repos
+                .filter(function (repo) { return repo && !repo.fork && repo.languages_url; })
+                .slice(0, MAX_REPOS)
+                .map(function (repo) { return repo.languages_url; });
+
+            if (!urls.length) throw new Error('sem repositórios');
+
+            // busca /languages de cada repo em paralelo (falha individual é ignorada)
+            return Promise.all(urls.map(function (u) {
+                return fetch(u)
+                    .then(function (r) { return r.ok ? r.json() : {}; })
+                    .catch(function () { return {}; });
+            }));
+        })
+        .then(function (langMaps) {
             var totals = {}, grand = 0;
-            repos.forEach(function (repo) {
-                if (!repo || repo.fork || !repo.language) return;
-                var weight = (repo.size && repo.size > 0) ? repo.size : 1; // tamanho do repo (KB) como peso
-                totals[repo.language] = (totals[repo.language] || 0) + weight;
-                grand += weight;
+            langMaps.forEach(function (m) {
+                if (!m) return;
+                Object.keys(m).forEach(function (lang) {
+                    var bytes = m[lang] || 0;
+                    totals[lang] = (totals[lang] || 0) + bytes;
+                    grand += bytes;
+                });
             });
 
             if (!grand) throw new Error('sem linguagens');
