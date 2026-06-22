@@ -5,7 +5,13 @@
 
    - Faz UMA chamada à API pública do GitHub (lista de repositórios)
      e soma o "tamanho" de cada repo pela sua linguagem principal,
-     ignorando forks. Leve no rate-limit (1 requisição por carga).
+     ignorando forks.
+   - A API pública do GitHub tem limite de 60 req/hora POR IP (sem
+     autenticação). Para não esbarrar nisso (e não mostrar erro), o
+     resultado é GUARDADO em cache (localStorage) por algumas horas:
+       1) cache fresco  → usa direto, sem nova requisição;
+       2) API falhou    → usa o último cache salvo (mesmo vencido);
+       3) sem cache     → usa um fallback estático (abaixo).
    - Cores no padrão do GitHub Linguist; o restante vira "Outros".
    - Usuário definido no data-user de #gh-langs (= "Vitor-LR").
    ============================================================ */
@@ -58,12 +64,49 @@
         });
     }
 
+    /* ---- cache em localStorage (evita esbarrar no rate-limit) ---- */
+    var CACHE_KEY = 'ghLangs:v1:' + user;
+    var TTL = 6 * 60 * 60 * 1000;   // 6 horas
+
+    function readCache() {
+        try {
+            var obj = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+            if (obj && obj.t && Array.isArray(obj.arr) && obj.grand) return obj;
+        } catch (e) {}
+        return null;
+    }
+    function writeCache(arr, grand) {
+        try {
+            localStorage.setItem(CACHE_KEY, JSON.stringify({ t: Date.now(), arr: arr, grand: grand }));
+        } catch (e) {}
+    }
+
+    /* ---- fallback estático (último recurso: API indisponível/limitada
+       e sem nenhum cache). Ajuste à vontade — são as suas linguagens. ---- */
+    var STATIC = [
+        { name: 'Go', weight: 38 },
+        { name: 'Python', weight: 24 },
+        { name: 'JavaScript', weight: 16 },
+        { name: 'HTML', weight: 10 },
+        { name: 'CSS', weight: 8 },
+        { name: 'SQL', weight: 4 }
+    ];
+    var STATIC_GRAND = STATIC.reduce(function (s, x) { return s + x.weight; }, 0);
+
     msg('carregando linguagens…');
 
+    // 1) cache ainda fresco → usa direto, sem bater na API
+    var cached = readCache();
+    if (cached && (Date.now() - cached.t) < TTL) {
+        render(cached.arr, cached.grand);
+        return;
+    }
+
+    // 2) busca na API; em falha usa cache (mesmo vencido) ou o fallback estático
     fetch('https://api.github.com/users/' + encodeURIComponent(user) + '/repos?per_page=100&type=owner&sort=pushed')
         .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
         .then(function (repos) {
-            if (!Array.isArray(repos) || !repos.length) { msg('nenhum repositório público'); return; }
+            if (!Array.isArray(repos) || !repos.length) throw new Error('vazio');
 
             var totals = {}, grand = 0;
             repos.forEach(function (repo) {
@@ -73,29 +116,35 @@
                 grand += weight;
             });
 
-            if (!grand) { msg('sem linguagens detectadas'); return; }
+            if (!grand) throw new Error('sem linguagens');
 
             var arr = Object.keys(totals)
                 .map(function (k) { return { name: k, weight: totals[k] }; })
                 .sort(function (a, b) { return b.weight - a.weight; });
 
+            writeCache(arr, grand);
             render(arr, grand);
         })
-        .catch(function () { msg('não foi possível carregar as linguagens'); });
+        .catch(function () {
+            var c = readCache();                       // tenta o último cache salvo
+            if (c) { render(c.arr, c.grand); return; }
+            render(STATIC, STATIC_GRAND);              // último recurso: estático
+        });
 
     function render(arr, grand) {
-        var MIN_PCT = 0.5;   // abaixo disso a linguagem vira "Outros" (evita "0.0%")
-        var TOP = 6;
+        var TOP = 6;   // sempre as 6 mais usadas → legenda 2×3 (mesmo layout do estático)
 
-        var withPct = arr.map(function (x) { return { name: x.name, pct: x.weight / grand * 100 }; });
-        var top = withPct.filter(function (x) { return x.pct >= MIN_PCT; }).slice(0, TOP);
-        var shown = top.reduce(function (s, x) { return s + x.pct; }, 0);
-        var rest = 100 - shown;
+        // top 6 por peso (arr já vem ordenado do maior p/ o menor)
+        var top = arr.slice(0, TOP).map(function (x) {
+            return { name: x.name, pct: x.weight / grand * 100 };
+        });
+
+        // normaliza os mostrados p/ somar 100% (preenche a barra; ignora a cauda)
+        var sum = top.reduce(function (s, x) { return s + x.pct; }, 0) || 1;
 
         var segs = top.map(function (x, i) {
-            return { name: x.name, pct: x.pct, color: colorFor(x.name, i) };
+            return { name: x.name, pct: x.pct / sum * 100, color: colorFor(x.name, i) };
         });
-        if (rest > 0.05) segs.push({ name: 'Outros', pct: rest, color: OUTROS });
 
         // barra empilhada
         var bar = '<div class="gl-bar" role="img" aria-label="Distribuição de linguagens">';

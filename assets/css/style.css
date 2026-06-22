@@ -119,6 +119,7 @@ html {
     scroll-behavior: smooth;
     scroll-padding-top: var(--header-h);
     -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;   /* remove o "quadrado" azul ao tocar no mobile */
 }
 
 /* Cursor: normal (do sistema) no tema escuro; preto no tema claro.
@@ -553,7 +554,8 @@ body::before {
     align-items: center;
     gap: 0.6rem;
     font-family: var(--font-mono);
-    font-size: 0.82rem;
+    font-size: clamp(0.6rem, 3vw, 0.82rem);   /* encolhe no mobile p/ caber numa linha */
+    white-space: nowrap;                       /* nunca quebra a linha */
     color: var(--text-muted);
     padding: 0.4rem 0.85rem;
     border: 1px solid var(--border);
@@ -846,11 +848,41 @@ body::before {
 
 /* Cartão lateral "perfil rápido" */
 .about-card {
-    background: var(--surface);
+    position: relative;
+    background:
+        /* reflexo metálico diagonal (luz nos cantos) */
+        linear-gradient(135deg,
+            rgba(255, 255, 255, 0.07) 0%,
+            rgba(255, 255, 255, 0.02) 20%,
+            transparent 42%,
+            transparent 60%,
+            rgba(255, 255, 255, 0.015) 80%,
+            rgba(255, 255, 255, 0.06) 100%),
+        /* brilho de canto ciano */
+        radial-gradient(125% 80% at 100% 0%, rgba(var(--particle-rgb), 0.08), transparent 55%),
+        /* superfície translúcida (frosted) */
+        color-mix(in srgb, var(--surface) 55%, transparent);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
+    backdrop-filter: blur(14px) saturate(1.2);
     border: 1px solid var(--border);
     border-radius: 0.9rem;
     padding: 1.6rem;
-    box-shadow: var(--shadow-card);
+    /* bisel metálico: realce claro no topo, sombra na base */
+    box-shadow:
+        var(--shadow-card),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.02),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.22);
+    overflow: hidden;
+}
+/* fio de gradiente sutil no topo (toque "console") */
+.about-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent-line) 25%, var(--accent-line) 75%, transparent);
+    pointer-events: none;
 }
 
 .about-card h3 {
@@ -900,18 +932,26 @@ body::before {
 }
 
 .about-stat {
+    position: relative;
     display: flex;
     align-items: baseline;
     gap: 0.6rem;
     min-width: 0;
-    padding: 0.8rem 1rem;
-    background: var(--surface);
+    padding: 0.85rem 1rem;
+    background: color-mix(in srgb, var(--surface) 32%, transparent);
     border: 1px solid var(--border);
     border-radius: 0.7rem;
-    transition: border-color 0.25s ease, transform 0.25s ease;
+    transition: transform 0.3s cubic-bezier(.2, .7, .2, 1),
+                border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
 }
 
-.about-stat:hover { border-color: var(--border-strong); transform: translateX(3px); }
+.about-stat:hover {
+    border-color: var(--accent-line);
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    box-shadow: 0 10px 26px rgba(var(--particle-rgb), 0.13);
+    transform: translateY(-3px);
+}
+.about-stat:hover .num { filter: drop-shadow(0 0 12px rgba(var(--particle-rgb), 0.30)); }
 
 .about-stat .num {
     flex-shrink: 0;
@@ -923,6 +963,7 @@ body::before {
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+    transition: filter 0.3s ease;
 }
 
 .about-stat .num .suffix { font-size: 0.9em; margin-left: 0.04em; }
