@@ -93,7 +93,7 @@
                 </div>
 
                 <div class="case-banner">
-                    <span class="banner-glyph">▦ ObservaStack · métricas em tempo real</span>
+                    <img src="../assets/img/observastack/banner.png" alt="Banner do projeto ObservaStack">
                 </div>
             </div>
         </section>
@@ -147,10 +147,10 @@
 
                         <h2>Screenshots</h2>
                         <div class="gallery">
-                            <figure><span class="ph">[ dashboard — latência ]</span></figure>
-                            <figure><span class="ph">[ dashboard — throughput ]</span></figure>
-                            <figure><span class="ph">[ prometheus targets ]</span></figure>
-                            <figure><span class="ph">[ alertas ]</span></figure>
+                            <figure><img src="../assets/img/observastack/shot1.png" alt="Dashboard de latência" loading="lazy"></figure>
+                            <figure><img src="../assets/img/observastack/shot2.png" alt="Dashboard de throughput" loading="lazy"></figure>
+                            <figure><img src="../assets/img/observastack/shot3.png" alt="Targets no Prometheus" loading="lazy"></figure>
+                            <figure><img src="../assets/img/observastack/shot4.png" alt="Regras de alerta" loading="lazy"></figure>
                         </div>
 
                         <h2>Desafios &amp; aprendizados</h2>
@@ -186,12 +186,16 @@
                                 <span class="badge">Docker</span>
                             </div>
                         </div>
-                        <a href="#" target="_blank" rel="noopener" class="btn btn--primary btn--block" style="margin-bottom:.7rem;">
-                            <svg class="icon"><use href="#i-arrow-up-right"></use></svg> Ver projeto
+                        <div class="aside-actions">
+                        <a href="#" target="_blank" rel="noopener" class="btn btn--primary btn--block">
+                            <svg class="icon"><use href="#i-arrow-up-right"></use></svg>
+                            <span class="cta-full">Ver projeto</span><span class="cta-short">Projeto</span>
                         </a>
                         <a href="https://github.com/" target="_blank" rel="noopener" class="btn btn--ghost btn--block">
-                            <svg class="icon"><use href="#i-github"></use></svg> Ver código
+                            <svg class="icon"><use href="#i-github"></use></svg>
+                            <span class="cta-full">Ver código</span><span class="cta-short">Código</span>
                         </a>
+                    </div>
                     </aside>
                 </div>
             </div>
@@ -205,8 +209,20 @@
         </div>
     </footer>
 
+    <!-- Lightbox das screenshots -->
+    <div class="lightbox" id="lightbox" aria-hidden="true">
+        <div class="lightbox-frame" role="dialog" aria-modal="true" aria-label="Screenshot ampliada">
+            <button class="lightbox-close" type="button" aria-label="Fechar (Esc)">
+                <svg class="icon"><use href="#i-x"></use></svg>
+            </button>
+            <img alt="">
+        </div>
+    </div>
+
     <script src="../assets/js/particles.js" defer></script>
     <script src="../assets/js/main.js" defer></script>
+    <script src="../assets/js/elastic-scroll.js" defer></script>
+    <script src="../assets/js/gallery-modal.js" defer></script>
 </body>
 
 </html>

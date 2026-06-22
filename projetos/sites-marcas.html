@@ -96,8 +96,7 @@
                 </div>
 
                 <div class="case-banner">
-                    <!-- Troque por <img src="../assets/img/sites-banner.png" alt="..."> -->
-                    <span class="banner-glyph">&lt;/&gt; Sites de marcas · web</span>
+                    <img src="../assets/img/sites/banner.png" alt="Banner do projeto Sites para marcas parceiras">
                 </div>
             </div>
         </section>
@@ -152,11 +151,10 @@
 
                         <h2>Screenshots</h2>
                         <div class="gallery">
-                            <!-- Troque os placeholders por prints reais dos sites -->
-                            <figure><span class="ph">[ site — home ]</span></figure>
-                            <figure><span class="ph">[ site — mobile ]</span></figure>
-                            <figure><span class="ph">[ seção — produtos ]</span></figure>
-                            <figure><span class="ph">[ seção — contato ]</span></figure>
+                            <figure><img src="../assets/img/sites/shot1.png" alt="Home do site (desktop)" loading="lazy"></figure>
+                            <figure><img src="../assets/img/sites/shot2.png" alt="Versão mobile" loading="lazy"></figure>
+                            <figure><img src="../assets/img/sites/shot3.png" alt="Seção de produtos" loading="lazy"></figure>
+                            <figure><img src="../assets/img/sites/shot4.png" alt="Seção de contato" loading="lazy"></figure>
                         </div>
 
                         <h2>Desafios &amp; aprendizados</h2>
@@ -193,12 +191,16 @@
                                 <span class="badge">WordPress</span>
                             </div>
                         </div>
-                        <a href="#" target="_blank" rel="noopener" class="btn btn--primary btn--block" style="margin-bottom:.7rem;">
-                            <svg class="icon"><use href="#i-arrow-up-right"></use></svg> Ver projeto
+                        <div class="aside-actions">
+                        <a href="#" target="_blank" rel="noopener" class="btn btn--primary btn--block">
+                            <svg class="icon"><use href="#i-arrow-up-right"></use></svg>
+                            <span class="cta-full">Ver projeto</span><span class="cta-short">Projeto</span>
                         </a>
                         <a href="https://github.com/" target="_blank" rel="noopener" class="btn btn--ghost btn--block">
-                            <svg class="icon"><use href="#i-github"></use></svg> Ver código
+                            <svg class="icon"><use href="#i-github"></use></svg>
+                            <span class="cta-full">Ver código</span><span class="cta-short">Código</span>
                         </a>
+                    </div>
                     </aside>
                 </div>
             </div>
@@ -212,8 +214,20 @@
         </div>
     </footer>
 
+    <!-- Lightbox das screenshots -->
+    <div class="lightbox" id="lightbox" aria-hidden="true">
+        <div class="lightbox-frame" role="dialog" aria-modal="true" aria-label="Screenshot ampliada">
+            <button class="lightbox-close" type="button" aria-label="Fechar (Esc)">
+                <svg class="icon"><use href="#i-x"></use></svg>
+            </button>
+            <img alt="">
+        </div>
+    </div>
+
     <script src="../assets/js/particles.js" defer></script>
     <script src="../assets/js/main.js" defer></script>
+    <script src="../assets/js/elastic-scroll.js" defer></script>
+    <script src="../assets/js/gallery-modal.js" defer></script>
 </body>
 
 </html>

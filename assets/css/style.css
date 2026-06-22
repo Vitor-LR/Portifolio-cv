@@ -32,7 +32,7 @@
     /* Texto */
     --text: #E6ECF5;
     --text-muted: #93A1B5;
-    --text-dim: #5C6B82;
+    --text-dim: #73839C;
 
     /* Destaque — ciano (Go) + índigo para profundidade */
     --accent: #38BDF8;
@@ -89,7 +89,7 @@
     --text-muted: #475569;
     --text-dim: #566377;
 
-    --accent: #0284C7;
+    --accent: #0370AB;
     --accent-2: #6366F1;
     --accent-soft: rgba(2, 132, 199, 0.10);
     --accent-line: rgba(2, 132, 199, 0.30);
@@ -120,6 +120,18 @@ html {
     scroll-padding-top: var(--header-h);
     -webkit-text-size-adjust: 100%;
 }
+
+/* Cursor: normal (do sistema) no tema escuro; preto no tema claro.
+   A seta preta tem contorno branco fino pra ficar visível mesmo sobre
+   elementos escuros. Links/campos mantêm seus cursores (mãozinha/texto). */
+[data-theme="light"] {
+    cursor: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M2.5%201.5%20L2.5%2016%20L6%2012.6%20L8.4%2017.8%20L10.4%2016.9%20L8%2011.8%20L13%2011.8%20Z%22%20fill%3D%22%23000000%22%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%221.2%22%20stroke-linejoin%3D%22round%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E") 3 2, auto;
+}
+
+/* wrapper do efeito elástico — sem will-change permanente (evita manter uma
+   camada gigante na GPU o tempo todo). O translate3d já compõe na GPU
+   durante o overscroll. */
+.elastic-wrap { backface-visibility: hidden; }
 
 body {
     background-color: var(--bg);
@@ -267,6 +279,19 @@ body::before {
 .btn--primary.is-visible:hover {
     transform: translateY(-2px) scale(1.02);
     box-shadow: var(--glow);
+}
+
+/* No tema claro o gradiente vivo + glow ciano ficava forte demais; aqui um
+   azul mais discreto e sombra leve (o tema escuro continua igual). */
+[data-theme="light"] .btn--primary {
+    background: linear-gradient(120deg, #54A4E6, #7D90E4);
+    color: #0a1322;
+    box-shadow: 0 4px 12px -3px rgba(2, 132, 199, 0.20);
+}
+[data-theme="light"] .btn--primary:hover,
+[data-theme="light"] .btn--primary:focus-visible,
+[data-theme="light"] .btn--primary.is-visible:hover {
+    box-shadow: 0 6px 16px -3px rgba(2, 132, 199, 0.26);
 }
 
 /* Botão secundário "ghost" com borda */
@@ -429,7 +454,37 @@ body::before {
     font-size: 1.5rem;
     cursor: pointer;
     place-items: center;
+    transition: color 0.25s ease, border-color 0.25s ease, background-color 0.25s ease, transform 0.25s ease;
 }
+.menu-toggle:hover,
+.menu-toggle:focus-visible {
+    color: var(--accent);
+    border-color: var(--accent-line);
+    background: var(--accent-soft);
+    transform: translateY(-1px);
+}
+
+/* barras do hambúrguer que viram um "X" ao abrir */
+.menu-toggle .mt-bars {
+    position: relative;
+    width: 18px;
+    height: 13px;
+}
+.menu-toggle .mt-bars span {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    border-radius: 2px;
+    background: currentColor;
+    transition: transform 0.3s cubic-bezier(.4, 0, .2, 1), opacity 0.2s ease, top 0.3s cubic-bezier(.4, 0, .2, 1);
+}
+.menu-toggle .mt-bars span:nth-child(1) { top: 0; }
+.menu-toggle .mt-bars span:nth-child(2) { top: 5.5px; }
+.menu-toggle .mt-bars span:nth-child(3) { top: 11px; }
+.menu-toggle[aria-expanded="true"] .mt-bars span:nth-child(1) { top: 5.5px; transform: rotate(45deg); }
+.menu-toggle[aria-expanded="true"] .mt-bars span:nth-child(2) { opacity: 0; }
+.menu-toggle[aria-expanded="true"] .mt-bars span:nth-child(3) { top: 5.5px; transform: rotate(-45deg); }
 
 /* ----- Seções (espaçamento base) ---------------------------- */
 .section {
@@ -441,10 +496,15 @@ body::before {
 .section--page-top {
     padding-top: max(clamp(2.5rem, 5vw, 4.75rem), calc(var(--header-h) + 2.5rem));
 }
+.section--page-top .back-link { margin-bottom: 1rem; }
+.section--page-top .section-head { margin-bottom: 1.5rem; }
 
 .section--alt {
     background: linear-gradient(180deg, transparent, var(--bg-2) 12%, var(--bg-2) 88%, transparent);
 }
+
+/* #sobre é a 1ª seção após o hero: padding-top menor p/ encostar mais no hero */
+#sobre { padding-top: clamp(2.8rem, 5vw, 3.6rem); }
 
 .section-head {
     max-width: 720px;
@@ -473,11 +533,11 @@ body::before {
    HERO
    ============================================================ */
 .hero {
-    min-height: 100vh;
+    min-height: auto;
     display: flex;
     align-items: center;
     padding-top: calc(var(--header-h) + 2rem);
-    padding-bottom: 4rem;
+    padding-bottom: clamp(2rem, 3.5vw, 2.6rem);
 }
 
 .hero .container {
@@ -568,6 +628,9 @@ body::before {
     margin-bottom: 2rem;
 }
 
+/* botão CV mostra texto completo no desktop e "Baixar CV" só no mobile */
+.btn--cv .cv-short { display: none; }
+
 .hero-meta {
     display: flex;
     align-items: center;
@@ -610,13 +673,52 @@ body::before {
 
 /* ----- Terminal (elemento-assinatura do hero) --------------- */
 .terminal {
+    position: relative;
     background: var(--terminal-bg);
     border: 1px solid var(--border-strong);
     border-radius: 0.9rem;
-    box-shadow: var(--shadow-card), 0 0 80px rgba(var(--particle-rgb), 0.06);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.06),
+        0 2px 8px rgba(5, 8, 18, 0.30),
+        0 18px 40px -12px rgba(5, 8, 18, 0.55),
+        0 44px 80px -34px rgba(5, 8, 18, 0.65),
+        0 0 70px rgba(var(--particle-rgb), 0.07);
     overflow: hidden;
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
+    transform: translateZ(0);
+}
+
+/* Palco do tilt 3D: dá perspectiva e segura a aura de brilho (sem clipar). */
+.hero-visual { perspective: 1100px; }
+.ide-stage {
+    position: relative;
+    transform-style: preserve-3d;
+    transform: rotateX(0deg) rotateY(0deg);
+}
+/* aura de gradiente atrás do IDE — profundidade e brilho (estilo "glow"). */
+.ide-stage::before {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: 1rem;
+    background: linear-gradient(135deg, #38BDF8 0%, #818CF8 48%, #C084FC 100%);
+    filter: blur(26px);
+    opacity: 0.14;
+    z-index: -1;
+    transform: translateZ(-70px) scale(0.97);
+    transition: opacity 0.45s ease;
+}
+.ide-stage:hover::before { opacity: 0.26; }
+[data-theme="light"] .ide-stage::before { opacity: 0.22; }
+[data-theme="light"] .ide-stage:hover::before { opacity: 0.32; }
+[data-theme="light"] .terminal {
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.7),
+        0 3px 10px rgba(15, 23, 42, 0.12),
+        0 20px 44px -14px rgba(15, 23, 42, 0.24),
+        0 46px 80px -32px rgba(15, 23, 42, 0.30),
+        0 0 60px rgba(var(--particle-rgb), 0.05);
 }
 
 .terminal-bar {
@@ -658,7 +760,9 @@ body::before {
 .term-prompt { color: var(--accent); }
 .term-flag { color: var(--accent-2); }
 .term-str { color: #7ee0b8; }
+[data-theme="light"] .term-str { color: #0f8a5f; }
 .term-key { color: #e6ecf5; }
+[data-theme="light"] .term-key { color: #1e2a44; }
 .term-comment { color: var(--text-dim); }
 .term-out { color: var(--text-muted); }
 
@@ -712,6 +816,33 @@ body::before {
     border-radius: 0.5rem;
     background: var(--chip-bg);
 }
+
+/* "Ler mais": recorta o texto em ~10 linhas (quando passa disso) com um
+   leve fade, e mostra um botão no estilo do site para abrir o restante.
+   O JS (about-readmore.js) controla quando aplicar e o limite de linhas. */
+.about-text-body { position: relative; }
+.about-text-body.clamped {
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to bottom, #000 82%, transparent);
+    mask-image: linear-gradient(to bottom, #000 82%, transparent);
+}
+.about-more {
+    margin-top: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0;
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+.about-more:hover { opacity: 0.7; }
+.about-chevron { width: 15px; height: 15px; transition: transform 0.35s ease; }
+.about-more.is-open .about-chevron { transform: rotate(180deg); }
 
 /* Cartão lateral "perfil rápido" */
 .about-card {
@@ -813,6 +944,7 @@ body::before {
 }
 
 .tech-group {
+    min-width: 0;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 0.9rem;
@@ -830,7 +962,7 @@ body::before {
     align-items: center;
     gap: 0.7rem;
     font-family: var(--font-mono);
-    font-size: 0.95rem;
+    font-size: 0.88rem;
     font-weight: 500;
     color: var(--text);
     margin-bottom: 1.1rem;
@@ -892,14 +1024,14 @@ body::before {
 .tg-ico {
     display: inline-grid;
     place-items: center;
-    width: 2.2rem;
-    height: 2.2rem;
+    width: 2rem;
+    height: 2rem;
     border-radius: 0.6rem;
     border: 1px solid color-mix(in srgb, currentColor 32%, transparent);
     background: color-mix(in srgb, currentColor 14%, transparent);
     flex-shrink: 0;
 }
-.tg-ico .icon { width: 1.15rem; height: 1.15rem; }
+.tg-ico .icon { width: 1rem; height: 1rem; }
 .tg-ico--front { color: #38BDF8; }   /* Front-end    — azul    */
 .tg-ico--back  { color: #34D399; }   /* Back-end     — verde   */
 .tg-ico--lang  { color: #F59E0B; }   /* Linguagens   — âmbar   */
@@ -925,6 +1057,54 @@ body::before {
     grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
 }
+
+/* ---- Carrossel do "todos os projetos" (grade 3 col, páginas de 6) ---- */
+.proj-carousel .projects-grid { grid-template-columns: repeat(3, 1fr); }
+.pc-viewport { overflow: hidden; }
+.pc-track {
+    display: flex;
+    touch-action: pan-y;        /* deixa a rolagem vertical livre no toque */
+    user-select: none;
+    will-change: transform;
+}
+.pc-slide { flex: 0 0 100%; min-width: 0; }
+
+.pc-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;    /* centralizado na página */
+    gap: 1.1rem;
+    margin-bottom: 2.2rem;
+}
+.pc-arrow {
+    display: inline-grid;
+    place-items: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    border-radius: 50%;
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: transform 0.2s ease, color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+}
+.pc-arrow:hover { color: var(--accent); border-color: var(--accent-line); transform: translateY(-2px); }
+.pc-arrow:disabled { opacity: 0.35; cursor: default; pointer-events: none; transform: none; }
+.pc-arrow .icon { width: 16px; height: 16px; }
+.pc-next .icon { transform: rotate(180deg); }   /* seta para a direita */
+
+.pc-dots { display: flex; align-items: center; gap: 0.5rem; }
+.pc-dot {
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    border: none;
+    border-radius: 999px;
+    background: var(--border-strong);
+    cursor: pointer;
+    transition: width 0.25s ease, background 0.25s ease;
+}
+.pc-dot.is-active { width: 22px; background: var(--gradient); }
 
 /* "Projetos em destaque": cards mais compactos.
    A capa vira uma faixa baixa (em vez de 16/9) e o corpo fica mais justo. */
@@ -1023,6 +1203,10 @@ body::before {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    /* ancora o corte à esquerda: o nome do projeto (na zona segura do banner)
+       fica sempre visível, independente da proporção da caixa (home largo,
+       todos-projetos quase-quadrado, mobile 2 colunas). */
+    object-position: left center;
 }
 
 .project-thumb .thumb-glyph {
@@ -1031,6 +1215,13 @@ body::before {
     color: rgba(230, 236, 245, 0.85);
     letter-spacing: 0.02em;
     text-shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* No tema claro a capa é clara, então o glyph quase-branco sumia: cor escura
+   legível no estado normal. O hover continua indo para --accent (animação mantida). */
+[data-theme="light"] .project-thumb .thumb-glyph {
+    color: var(--text-muted);
+    text-shadow: none;
 }
 
 .project-card:hover .thumb-glyph { color: var(--accent); }
@@ -1131,7 +1322,7 @@ body::before {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: clamp(2rem, 5vw, 3.5rem);
-    align-items: center;   /* centra a coluna mais curta (formação) na altura da experiência */
+    align-items: start;   /* topo alinhado: títulos "Experiência" e "Formação" na mesma linha */
 }
 
 .timeline {
@@ -1206,6 +1397,99 @@ body::before {
     color: var(--accent);
 }
 
+/* ---- Experiências: descrição recolhível (desktop + mobile) ----
+   Cada experiência abre/fecha a lista (a educação não tem lista, é ignorada).
+   Recolhido por padrão; o toggle "detalhes" expande com animação. */
+.exp-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.55rem;
+    padding: 0;
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+.exp-toggle:hover { opacity: 0.7; }
+.exp-chevron { width: 15px; height: 15px; transition: transform 0.35s ease; }
+.exp-toggle.is-open .exp-chevron { transform: rotate(180deg); }
+
+.exp-desc {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.45s cubic-bezier(.4, 0, .2, 1);
+}
+.exp-desc.open { grid-template-rows: 1fr; }
+.exp-desc-inner { overflow: hidden; min-height: 0; }
+
+.exp-card {
+    margin-top: 0.55rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 0.7rem;
+    background: var(--cat-bg);                 /* translúcido, igual aos chips */
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+/* delay na abertura: a altura abre primeiro, depois o conteúdo aparece (UX) */
+.exp-desc.open .exp-card {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.35s ease 0.12s, transform 0.35s ease 0.12s;
+}
+
+/* ----- Tecnologias: cabeçalho vira toggle SÓ no mobile/estreito ----------
+   No desktop/web normal, os chips ficam sempre visíveis (estado atual). */
+.tg-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background: none;
+    border: none;
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    cursor: default;            /* desktop: não parece clicável */
+}
+.tg-chevron {
+    width: 16px;
+    height: 16px;
+    margin-left: auto;
+    flex: none;
+    color: var(--accent);
+    transition: transform 0.35s ease;
+    display: none;              /* escondido no desktop */
+}
+.tg-toggle.is-open .tg-chevron { transform: rotate(180deg); }
+.tg-desc { display: block; }   /* normal: chips sempre visíveis */
+
+/* Modo recolhível — ativado por JS (.is-collapsible) quando ALGUM card passa
+   de 3 linhas de chips. Aí todos os grupos recolhem e o título vira toggle. */
+.tech-groups.is-collapsible { align-items: start; }   /* cada card com altura própria */
+.tech-groups.is-collapsible .tg-toggle { cursor: pointer; gap: 0.5rem; }
+.tech-groups.is-collapsible .tg-chevron { display: block; }
+.tech-groups.is-collapsible .tech-group h3 { margin-bottom: 0; }
+.tech-groups.is-collapsible .tg-desc {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.42s cubic-bezier(.4, 0, .2, 1);
+}
+.tech-groups.is-collapsible .tg-desc.open { grid-template-rows: 1fr; }
+.tech-groups.is-collapsible .tg-desc-inner { overflow: hidden; min-height: 0; }
+.tech-groups.is-collapsible .tg-desc .badges { padding-top: 0.85rem; }
+/* evita animação ao trocar de modo (só os cliques do usuário animam) */
+.tech-groups.tg-no-anim .tg-desc { transition: none !important; }
+
 .col-title {
     font-family: var(--font-display);
     font-size: 1.15rem;
@@ -1256,10 +1540,18 @@ body::before {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 0.7rem;
-    transition: border-color 0.25s ease, transform 0.25s ease;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.cert-item:hover { border-color: var(--border-strong); transform: translateX(3px); }
+.cert-item:hover {
+    border-color: var(--accent-line);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-card);
+}
+.cert-item:hover .cert-name { color: var(--accent); }
 
 .cert-item .cert-mark {
     font-family: var(--font-mono);
@@ -1268,8 +1560,26 @@ body::before {
     flex-shrink: 0;
 }
 
-.cert-item .cert-name { font-size: 0.92rem; color: var(--text); }
+.cert-item .cert-body { min-width: 0; flex: 1; }
+.cert-item .cert-name { font-size: 0.92rem; color: var(--text); transition: color 0.25s ease; }
 .cert-item .cert-by { font-size: 0.8rem; color: var(--text-dim); font-family: var(--font-mono); }
+
+/* seta "verificar" — aparece e assenta no hover/foco */
+.cert-item .cert-arrow {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    color: var(--text-dim);
+    opacity: 0;
+    transform: translate(-4px, 4px);
+    transition: opacity 0.25s ease, transform 0.25s ease, color 0.25s ease;
+}
+.cert-item:hover .cert-arrow,
+.cert-item:focus-visible .cert-arrow {
+    opacity: 1;
+    transform: translate(0, 0);
+    color: var(--accent);
+}
 
 /* ============================================================
    CONTATO
@@ -1609,6 +1919,8 @@ body::before {
 
 .form-field input::placeholder,
 .form-field textarea::placeholder { color: var(--text-dim); }
+[data-theme="light"] .form-field input::placeholder,
+[data-theme="light"] .form-field textarea::placeholder { color: #9aa6b6; }
 
 .form-field input:focus,
 .form-field textarea:focus {
@@ -1778,6 +2090,8 @@ body::before {
    FOOTER
    ============================================================ */
 .footer {
+    position: relative;
+    z-index: 1;
     border-top: 1px solid var(--border);
     padding-block: 3rem 2.5rem;
 }
@@ -1830,7 +2144,7 @@ body::before {
    PÁGINA DE PROJETO (estudo de caso)
    ============================================================ */
 .case-hero {
-    padding-top: calc(var(--header-h) + 5rem);
+    padding-top: calc(var(--header-h) + 2.5rem);
     padding-bottom: 3rem;
 }
 /* "voltar aos projetos" e o eyebrow ficam lado a lado no desktop.
@@ -1954,14 +2268,106 @@ body::before {
     display: grid;
     place-items: center;
     overflow: hidden;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
-.gallery figure img { width: 100%; height: 100%; object-fit: cover; }
+.gallery figure img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.45s ease;
+}
+
+/* leve animação ao passar o mouse (só em telas com hover): a moldura sobe um
+   pouco e ganha borda/realce, e a imagem dá um zoom suave clipado pela borda. */
+@media (hover: hover) {
+    .gallery figure:hover {
+        transform: translateY(-3px);
+        border-color: rgba(56, 189, 248, 0.55);
+        box-shadow: 0 12px 26px -14px rgba(0, 0, 0, 0.6),
+                    0 0 16px -1px rgba(56, 189, 248, 0.28);
+    }
+    .gallery figure:hover img { transform: scale(1.06); }
+}
 
 .gallery .ph {
     font-family: var(--font-mono);
     font-size: 0.8rem;
     color: var(--text-dim);
+}
+
+/* ---- Lightbox (janela ampliada das screenshots) ---- */
+.gallery figure { cursor: zoom-in; }
+.gallery figure img { -webkit-touch-callout: none; }
+
+.lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5vmin;
+    background: rgba(6, 10, 20, 0.72);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease, visibility 0.45s ease;
+}
+.lightbox.open { opacity: 1; visibility: visible; }
+
+.lightbox-frame {
+    position: relative;
+    max-width: min(1100px, 92vw);
+    max-height: 88vh;
+    padding: 10px;
+    border-radius: 16px;
+    /* borda em gradiente ciano→índigo (padding-box + border-box) */
+    border: 1.5px solid transparent;
+    background:
+        linear-gradient(var(--surface), var(--surface)) padding-box,
+        linear-gradient(125deg, #38BDF8, #818CF8) border-box;
+    box-shadow:
+        0 40px 90px -24px rgba(0, 0, 0, 0.8),
+        0 0 42px -6px rgba(56, 189, 248, 0.30);
+    transform: translateY(34px) scale(0.88);
+    opacity: 0;
+    transition: transform 0.45s cubic-bezier(.18, .89, .32, 1.08), opacity 0.4s ease;
+}
+.lightbox.open .lightbox-frame { transform: translateY(0) scale(1); opacity: 1; }
+
+.lightbox-frame img {
+    display: block;
+    max-width: 100%;
+    max-height: calc(88vh - 20px);
+    border-radius: 9px;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.lightbox-close {
+    position: absolute;
+    top: -16px;
+    right: -16px;
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    border: 1px solid var(--border-strong);
+    background: var(--surface-2);
+    color: var(--text);
+    cursor: pointer;
+    box-shadow: 0 6px 18px -6px rgba(0, 0, 0, 0.6);
+    transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+.lightbox-close:hover { transform: scale(1.08); color: var(--accent); }
+.lightbox-close .icon { width: 18px; height: 18px; }
+
+@media (prefers-reduced-motion: reduce) {
+    .lightbox, .lightbox-frame { transition: opacity 0.15s ease, visibility 0.15s ease; }
+    .lightbox-frame { transform: none; }
 }
 
 /* Sidebar do estudo de caso */
@@ -1973,6 +2379,10 @@ body::before {
     border-radius: 1rem;
     padding: 1.6rem;
 }
+
+/* ações da sidebar (Ver projeto / Ver código) — empilhadas no rodapé no desktop */
+.aside-actions { display: flex; flex-direction: column; gap: 0.7rem; }
+.aside-actions .cta-short { display: none; }
 
 .case-aside h3 {
     font-family: var(--font-mono);
@@ -2042,17 +2452,29 @@ body::before {
     animation: fadeUp 1s ease 0.35s both;
 }
 
+/* Hero das páginas de projeto anima na carga — mesma fadeUp do index,
+   escalonada: voltar, eyebrow, título, descrição, botões e banner. */
+.case-hero .container > * {
+    opacity: 0;
+    animation: fadeUp 0.8s ease both;
+}
+.case-hero .container > *:nth-child(1) { animation-delay: 0.05s; }
+.case-hero .container > *:nth-child(2) { animation-delay: 0.15s; }
+.case-hero .container > *:nth-child(3) { animation-delay: 0.25s; }
+.case-hero .container > *:nth-child(4) { animation-delay: 0.35s; }
+.case-hero .container > *:nth-child(5) { animation-delay: 0.45s; }
+.case-hero .container > *:nth-child(6) { animation-delay: 0.55s; }
+
 /* Reveal no scroll (classe .reveal adicionada via JS) */
 .reveal {
     opacity: 0;
     transform: translateY(26px);
     transition: opacity 0.7s ease, transform 0.7s ease;
-    will-change: opacity, transform;
 }
 
 .reveal.is-visible {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
 }
 
 /* ============================================================
@@ -2075,6 +2497,7 @@ body::before {
     }
     .reveal { opacity: 1; transform: none; }
     .hero-content > *, .hero-visual { opacity: 1; }
+    .case-hero .container > * { opacity: 1; }
     .status-dot { animation: none; }
 }
 
@@ -2163,17 +2586,54 @@ html { scrollbar-color: var(--scrollbar-thumb) var(--bg); }
     .case-aside { position: static; }
 }
 
-/* Telas médias → grids para 1 coluna */
+/* Telas médias */
 @media (max-width: 760px) {
-    .gallery { grid-template-columns: 1fr; }
+    /* carrossel: volta a 2 colunas no mobile (como o index) */
+    .proj-carousel .projects-grid { grid-template-columns: repeat(2, 1fr); }
+    /* a galeria de screenshots continua 2x2 também no mobile (era 1 coluna);
+       só aperta um pouco o espaçamento nessas telas */
+    .gallery { gap: 0.7rem; }
 
     /* Some o botão "Baixar CV" do header no mobile (já está no hero) */
     .header-actions .btn { display: none; }
+
+    /* aside: no mobile os botões "Ver projeto / Ver código" saem do rodapé e
+       vão pro canto superior direito do cartão "// detalhes". Uso GRID (sem
+       position) p/ não sobrepor o rodapé: a coluna esquerda leva os detalhes
+       e a direita leva as ações no topo. */
+    .case-aside {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        column-gap: 0.75rem;
+        align-content: start;
+    }
+    .case-aside > * { grid-column: 1; min-width: 0; }
+    .case-aside > .aside-actions {
+        grid-column: 2;
+        grid-row: 1 / span 3;
+        align-self: start;
+        width: 120px;
+        gap: 0.75rem;
+    }
+    .aside-actions .btn {
+        padding: 0.5rem 0.5rem;
+        font-size: 0.8rem;
+        gap: 0.35rem;
+        border-radius: 0.55rem;
+    }
+    .aside-actions .cta-full { display: none; }
+    .aside-actions .cta-short { display: inline; }
+
+    /* (1) localização à direita dos ícones sociais (poupa espaço vertical) */
+    .hero-meta { flex-wrap: nowrap; gap: 0.7rem; }
+    .hero-meta .social-links { gap: 0.45rem; }
+    .hero-meta .social-links a { width: 2.4rem; height: 2.4rem; font-size: 1rem; }
+    .hero-meta .meta-text { margin-left: auto; text-align: right; font-size: 0.72rem; line-height: 1.4; }
 }
 
 /* Mobile */
 @media (max-width: 480px) {
-    .form-row { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; gap: 0; }
     /* certificações continuam 2 por linha no mobile (N×2) p/ reduzir a altura;
        apertamos padding/fonte pra o texto caber sem espremer */
     .cert-list { gap: 0.55rem; }
@@ -2189,8 +2649,31 @@ html { scrollbar-color: var(--scrollbar-thumb) var(--bg); }
     .tech-group .badges { gap: 0.4rem; }
     .tech-group .badge { font-size: 0.72rem; padding: 0.32rem 0.5rem; gap: 0.35rem; }
 
-    .hero-cta { width: 100%; }
-    .hero-cta .btn { flex: 1; }
+    /* hero: "Ver projetos" sozinho em cima (linha inteira) e
+       "Entrar em contato" + "Baixar CV" lado a lado embaixo */
+    .hero-cta {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 0.7rem;
+        width: 100%;
+    }
+    .hero-cta .btn {
+        flex: none;
+        font-size: 0.85rem;
+        padding: 0.8rem 0.7rem;
+        gap: 0.45rem;
+        white-space: normal;     /* rede de segurança: quebra em vez de vazar */
+        line-height: 1.2;
+        text-align: center;
+    }
+    .hero-cta .btn--primary {
+        grid-column: 1 / -1;
+        justify-self: center;
+        width: 55%;
+        min-width: 160px;
+    }
+    .btn--cv .cv-full { display: none; }
+    .btn--cv .cv-short { display: inline; }
     .project-actions { flex-direction: column; }
     .case-actions .btn { flex: 1; }
 }

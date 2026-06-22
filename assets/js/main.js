@@ -168,6 +168,28 @@
         revealItems.forEach(el => obs.observe(el));
     }
 
+    /* O card "// detalhes" (.case-aside) é sticky e alto: o observador padrão
+       (12% de área visível) o revelaria bem depois dos títulos curtos ao lado.
+       Aqui ele tem gatilho próprio (threshold 0, mesma rootMargin) pra revelar
+       assim que o topo entra — em sincronia com o topo do conteúdo do case.
+       O reveal termina em transform:none, então o sticky volta ao normal. */
+    const caseAside = document.querySelector('.case-aside');
+    if (caseAside) {
+        caseAside.classList.add('reveal');
+        if (prefersReduced || !('IntersectionObserver' in window)) {
+            caseAside.classList.add('is-visible');
+        } else {
+            const asideObs = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) return;
+                    entry.target.classList.add('is-visible');
+                    asideObs.unobserve(entry.target);
+                });
+            }, { threshold: 0, rootMargin: '0px 0px -50px 0px' });
+            asideObs.observe(caseAside);
+        }
+    }
+
     /* ========================================================
        4. NAV ATIVO — destaca o item da seção visível
        ======================================================== */
@@ -309,7 +331,7 @@
     /* ========================================================
        6. CONTADORES — anima os números das estatísticas
        ======================================================== */
-    const counters = document.querySelectorAll('[data-count]');
+    const counters = document.querySelectorAll('[data-count], [data-levels]');
     if (counters.length) {
         function animateCount(el) {
             const target = parseFloat(el.dataset.count);
@@ -326,13 +348,38 @@
             requestAnimationFrame(tick);
         }
 
+        // anima através de níveis (ex.: A1 → A2 → B1 → B2 → C1), no mesmo ritmo
+        function animateLevels(el) {
+            const levels = el.dataset.levels.split(',');
+            const dur = 1400;
+            const start = performance.now();
+            function tick(now) {
+                const p = Math.min((now - start) / dur, 1);
+                const eased = 1 - Math.pow(1 - p, 3);
+                const idx = Math.min(levels.length - 1, Math.floor(eased * levels.length));
+                el.textContent = levels[idx];
+                if (p < 1) requestAnimationFrame(tick);
+                else el.textContent = levels[levels.length - 1];
+            }
+            requestAnimationFrame(tick);
+        }
+
+        function run(el) {
+            if (el.dataset.levels) animateLevels(el);
+            else animateCount(el);
+        }
+
         if (prefersReduced || !('IntersectionObserver' in window)) {
-            counters.forEach(el => { el.textContent = el.dataset.count; });
+            counters.forEach(el => {
+                el.textContent = el.dataset.levels
+                    ? el.dataset.levels.split(',').pop()
+                    : el.dataset.count;
+            });
         } else {
             const cObs = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        animateCount(entry.target);
+                        run(entry.target);
                         cObs.unobserve(entry.target);
                     }
                 });

@@ -27,8 +27,8 @@
     <title>Vitor Lombard Rocha — Desenvolvedor Backend</title>
 
     <!-- Favicon: troque por um .png/.svg seu na pasta assets/img -->
-    <link rel="icon" type="image/png" href="assets/favicon.png">
-    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="assets/img/favicon.png">
+    <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
     <!-- TROCAR o domínio ao publicar -->
     <link rel="canonical" href="https://vitor-lr.github.io/Portifolio-cv/">
 
@@ -137,7 +137,7 @@
                 </a>
                 <button class="menu-toggle" id="menu-icon" aria-label="Abrir menu"
                     aria-expanded="false" aria-controls="navbar">
-                    <svg class="icon"><use href="#i-list"></use></svg>
+                    <span class="mt-bars" aria-hidden="true"><span></span><span></span><span></span></span>
                 </button>
             </div>
         </div>
@@ -179,9 +179,10 @@
                             <svg class="icon"><use href="#i-envelope"></use></svg>
                             Entrar em contato
                         </a>
-                        <a href="assets/cv/CV-Vitor-Rocha.pdf" download class="btn btn--ghost">
+                        <a href="assets/cv/CV-Vitor-Rocha.pdf" download class="btn btn--ghost btn--cv">
                             <svg class="icon"><use href="#i-download"></use></svg>
-                            Baixar currículo
+                            <span class="cv-full">Baixar currículo</span>
+                            <span class="cv-short">Baixar CV</span>
                         </a>
                     </div>
 
@@ -204,16 +205,18 @@
                     </div>
                 </div>
 
-                <!-- Elemento-assinatura: terminal que "digita" o perfil -->
+                <!-- Elemento-assinatura: terminal que "digita" o perfil (com tilt 3D) -->
                 <div class="hero-visual">
-                    <div class="terminal" role="img" aria-label="Terminal exibindo o perfil de Vitor Lombard Rocha">
-                        <div class="terminal-bar">
-                            <span class="dot r"></span>
-                            <span class="dot y"></span>
-                            <span class="dot g"></span>
-                            <span class="term-title">vitor@portfolio: ~</span>
+                    <div class="ide-stage" data-tilt>
+                        <div class="terminal" role="img" aria-label="Terminal exibindo o perfil de Vitor Lombard Rocha">
+                            <div class="terminal-bar">
+                                <span class="dot r"></span>
+                                <span class="dot y"></span>
+                                <span class="dot g"></span>
+                                <span class="term-title">vitor@portfolio: ~</span>
+                            </div>
+                            <div class="terminal-body" id="terminal-out"></div>
                         </div>
-                        <div class="terminal-body" id="terminal-out"></div>
                     </div>
                 </div>
             </div>
@@ -271,7 +274,7 @@
                                 <div class="label">projetos entregues</div>
                             </div>
                             <div class="about-stat">
-                                <div class="num">C1</div>
+                                <div class="num"><span data-levels="A1,A2,B1,B2,C1">A1</span></div>
                                 <div class="label">nível de inglês</div>
                             </div>
                             <div class="about-stat">
@@ -323,7 +326,7 @@
                     </div>
 
                     <div class="tech-group">
-                        <h3><span class="tg-ico tg-ico--lang"><svg class="icon"><use href="#i-code"></use></svg></span> Linguagens de programação</h3>
+                        <h3><span class="tg-ico tg-ico--lang"><svg class="icon"><use href="#i-code"></use></svg></span> Linguagens programação</h3>
                         <div class="badges">
                             <span class="badge"><svg class="badge-ico ic-go"><use href="#si-go"></use></svg>Golang</span>
                             <span class="badge"><svg class="badge-ico ic-python"><use href="#si-python"></use></svg>Python</span>
@@ -357,7 +360,7 @@
                     </div>
 
                     <div class="tech-group">
-                        <h3><span class="tg-ico tg-ico--tools"><svg class="icon"><use href="#i-tools"></use></svg></span> Ferramentas &amp; Versionamento</h3>
+                        <h3><span class="tg-ico tg-ico--tools"><svg class="icon"><use href="#i-tools"></use></svg></span> Tools &amp; Workflow</h3>
                         <div class="badges">
                             <span class="badge"><svg class="badge-ico ic-git"><use href="#si-git"></use></svg>Git</span>
                             <span class="badge"><svg class="badge-ico"><use href="#i-github"></use></svg>GitHub</span>
@@ -490,34 +493,39 @@
                             <svg class="icon col-ico"><use href="#i-award"></use></svg> Certificações
                         </h3>
                         <div class="cert-list">
-                            <div class="cert-item">
+                            <!-- TROCAR href="#": coloque o link de verificação de cada certificado -->
+                            <a class="cert-item" href="#" target="_blank" rel="noopener">
                                 <span class="cert-mark">✓</span>
-                                <div>
+                                <div class="cert-body">
                                     <div class="cert-name">Introdução à Ciência da Computação</div>
                                     <div class="cert-by">CS50x · Harvard</div>
                                 </div>
-                            </div>
-                            <div class="cert-item">
+                                <svg class="cert-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M17 7H11M17 7V13"/></svg>
+                            </a>
+                            <a class="cert-item" href="#" target="_blank" rel="noopener">
                                 <span class="cert-mark">✓</span>
-                                <div>
+                                <div class="cert-body">
                                     <div class="cert-name">Aprenda Golang do Zero</div>
                                     <div class="cert-by">Udemy</div>
                                 </div>
-                            </div>
-                            <div class="cert-item">
+                                <svg class="cert-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M17 7H11M17 7V13"/></svg>
+                            </a>
+                            <a class="cert-item" href="#" target="_blank" rel="noopener">
                                 <span class="cert-mark">✓</span>
-                                <div>
+                                <div class="cert-body">
                                     <div class="cert-name">Banco de Dados e SQL</div>
                                     <div class="cert-by">Udemy</div>
                                 </div>
-                            </div>
-                            <div class="cert-item">
+                                <svg class="cert-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M17 7H11M17 7V13"/></svg>
+                            </a>
+                            <a class="cert-item" href="#" target="_blank" rel="noopener">
                                 <span class="cert-mark">✓</span>
-                                <div>
+                                <div class="cert-body">
                                     <div class="cert-name">Excel Completo</div>
                                     <div class="cert-by">Udemy</div>
                                 </div>
-                            </div>
+                                <svg class="cert-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M17 7H11M17 7V13"/></svg>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -756,10 +764,15 @@
     <script src="assets/js/particles.js" defer></script>
     <script src="assets/js/projects.js" defer></script>
     <script src="assets/js/main.js" defer></script>
+    <script src="assets/js/tilt-ide.js" defer></script>
     <script src="assets/js/github-contrib.js" defer></script>
     <script src="assets/js/github-langs.js" defer></script>
     <script src="assets/js/leetcode-stats.js" defer></script>
     <script src="assets/js/contact-form.js" defer></script>
+    <script src="assets/js/experience-collapse.js" defer></script>
+    <script src="assets/js/tech-collapse.js" defer></script>
+    <script src="assets/js/about-readmore.js" defer></script>
+    <script src="assets/js/elastic-scroll.js" defer></script>
 </body>
 
 </html>
