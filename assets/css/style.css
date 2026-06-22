@@ -830,18 +830,18 @@ body::before {
     margin-top: 0.9rem;
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.45rem;
     padding: 0;
     background: none;
     border: none;
     color: var(--accent);
     font-family: var(--font-mono);
-    font-size: 0.85rem;
+    font-size: 0.98rem;
     cursor: pointer;
     transition: opacity 0.2s ease;
 }
 .about-more:hover { opacity: 0.7; }
-.about-chevron { width: 15px; height: 15px; transition: transform 0.35s ease; }
+.about-chevron { width: 17px; height: 17px; transition: transform 0.35s ease; }
 .about-more.is-open .about-chevron { transform: rotate(180deg); }
 
 /* Cartão lateral "perfil rápido" */
@@ -1255,6 +1255,19 @@ body::before {
     }
 }
 
+/* No mobile/touch (sem hover) a categoria entra animada quando o card aparece,
+   em vez de ficar estática. */
+@media (hover: none) {
+    .project-cat {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    .project-card.is-visible .project-cat {
+        animation: catReveal 0.55s cubic-bezier(.16, 1, .3, 1) 0.2s forwards;
+    }
+}
+@keyframes catReveal { to { opacity: 1; transform: translateY(0); } }
+
 .project-body {
     padding: 1.4rem;
     display: flex;
@@ -1470,12 +1483,20 @@ body::before {
     transition: transform 0.35s ease;
     display: none;              /* escondido no desktop */
 }
+/* título: pode quebrar/hifenizar palavras longas pra não empurrar a seta */
+.tg-label {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+}
 .tg-toggle.is-open .tg-chevron { transform: rotate(180deg); }
 .tg-desc { display: block; }   /* normal: chips sempre visíveis */
 
 /* Modo recolhível — ativado por JS (.is-collapsible) quando ALGUM card passa
    de 3 linhas de chips. Aí todos os grupos recolhem e o título vira toggle. */
-.tech-groups.is-collapsible { align-items: start; }   /* cada card com altura própria */
+.tech-groups.is-collapsible { align-items: start; }   /* cada card cresce só quando ABERTO; cabeçalhos são igualados via JS */
 .tech-groups.is-collapsible .tg-toggle { cursor: pointer; gap: 0.5rem; }
 .tech-groups.is-collapsible .tg-chevron { display: block; }
 .tech-groups.is-collapsible .tech-group h3 { margin-bottom: 0; }
@@ -2402,7 +2423,12 @@ body::before {
     margin-bottom: 0.4rem;
 }
 
-.case-aside .meta-val { color: var(--text); font-size: 0.92rem; }
+.case-aside .meta-val {
+    color: var(--text);
+    font-size: 0.92rem;
+    overflow-wrap: break-word;   /* quebra a palavra antes de invadir as tecnologias */
+    hyphens: auto;
+}
 
 .case-aside .badges { margin-top: 0.2rem; }
 
@@ -2603,17 +2629,29 @@ html { scrollbar-color: var(--scrollbar-thumb) var(--bg); }
        e a direita leva as ações no topo. */
     .case-aside {
         display: grid;
-        grid-template-columns: 1fr auto;
-        column-gap: 0.75rem;
+        grid-template-columns: 1fr 130px;
+        column-gap: 0.9rem;
         align-content: start;
+        align-items: start;
     }
-    .case-aside > * { grid-column: 1; min-width: 0; }
+    .case-aside > * { min-width: 0; }
+    .case-aside > h3 { grid-column: 1; grid-row: 1; }
+    .case-aside > .meta-block { grid-column: 1; }                          /* categoria, ano, papel à esquerda */
+    .case-aside > .meta-block:has(.badges) {
+        grid-column: 2;
+        grid-row: 3 / span 2;   /* tecnologias ao lado de ano+papel */
+        align-self: start;
+    }
+    .case-aside > .meta-block:has(.badges) .badge {
+        font-size: 0.72rem;
+        padding: 0.18rem 0.45rem;   /* badges compactas: cabem em menos linhas */
+    }
     .case-aside > .aside-actions {
         grid-column: 2;
-        grid-row: 1 / span 3;
+        grid-row: 1 / span 2;   /* botões no topo, ao lado de "// detalhes" */
         align-self: start;
-        width: 120px;
-        gap: 0.75rem;
+        width: 100%;
+        gap: 0.6rem;
     }
     .aside-actions .btn {
         padding: 0.5rem 0.5rem;
@@ -2628,7 +2666,7 @@ html { scrollbar-color: var(--scrollbar-thumb) var(--bg); }
     .hero-meta { flex-wrap: nowrap; gap: 0.7rem; }
     .hero-meta .social-links { gap: 0.45rem; }
     .hero-meta .social-links a { width: 2.4rem; height: 2.4rem; font-size: 1rem; }
-    .hero-meta .meta-text { margin-left: auto; text-align: right; font-size: 0.72rem; line-height: 1.4; }
+    .hero-meta .meta-text { text-align: left; font-size: 0.72rem; line-height: 1.4; }
 }
 
 /* Mobile */
@@ -2675,7 +2713,8 @@ html { scrollbar-color: var(--scrollbar-thumb) var(--bg); }
     .btn--cv .cv-full { display: none; }
     .btn--cv .cv-short { display: inline; }
     .project-actions { flex-direction: column; }
-    .case-actions .btn { flex: 1; }
+    .case-actions { flex-wrap: nowrap; gap: 0.6rem; }
+    .case-actions .btn { flex: 1; min-width: 0; padding-left: 0.6rem; padding-right: 0.6rem; }
 }
 
 /* ============================================================

@@ -24,12 +24,20 @@
 
         var id = 'tg-desc-' + i;
 
-        // cabeçalho vira botão + chevron
+        // cabeçalho vira botão + chevron; o texto do título vai num .tg-label
+        // (permite quebrar/hifenizar palavras longas sem empurrar a seta)
+        var ico = h3.querySelector('.tg-ico');
+        var labelText = h3.textContent.trim();
+        h3.innerHTML = '';                       // limpa o título original (evita duplicar)
         var btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'tg-toggle';
         btn.setAttribute('aria-controls', id);
-        while (h3.firstChild) btn.appendChild(h3.firstChild);
+        if (ico) btn.appendChild(ico);
+        var label = document.createElement('span');
+        label.className = 'tg-label';
+        label.textContent = labelText;
+        btn.appendChild(label);
         btn.insertAdjacentHTML('beforeend',
             '<svg class="tg-chevron" viewBox="0 0 24 24" aria-hidden="true">' +
             '<path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" ' +
@@ -74,6 +82,23 @@
         return lines;
     }
 
+    // Iguala a ALTURA dos cabeçalhos (toggles) no modo recolhível, para que a
+    // quebra de linha de um título não deixe um card mais alto que o outro.
+    // Como o min-height fica só no cabeçalho, expandir um card NÃO estica os
+    // vizinhos (eles continuam recolhidos na altura do cabeçalho).
+    function equalizeHeaders() {
+        items.forEach(function (it) { it.btn.style.minHeight = ''; });   // reset
+        if (!container.classList.contains('is-collapsible')) return;     // desktop: sem igualar
+        var max = 0;
+        items.forEach(function (it) {
+            var h = it.btn.getBoundingClientRect().height;               // força reflow já limpo
+            if (h > max) max = h;
+        });
+        if (max > 0) {
+            items.forEach(function (it) { it.btn.style.minHeight = max + 'px'; });
+        }
+    }
+
     function evaluate() {
         // mede no estado expandido (sem animar a troca de modo)
         container.classList.add('tg-no-anim');
@@ -93,6 +118,7 @@
         });
 
         requestAnimationFrame(function () { container.classList.remove('tg-no-anim'); });
+        equalizeHeaders();
     }
 
     evaluate();
