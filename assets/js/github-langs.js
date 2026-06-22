@@ -58,6 +58,18 @@
 
     function colorFor(name, i) { return COLORS[name] || FALLBACK[i % FALLBACK.length]; }
 
+    /* Nomes longos → versão curta, p/ não cortar na legenda (2 colunas).
+       Acrescente aqui qualquer linguagem que apareça cortada no futuro. */
+    var SHORT = {
+        'JavaScript': 'JS',
+        'TypeScript': 'TS',
+        'Jupyter Notebook': 'Jupyter',
+        'Objective-C': 'Obj-C',
+        'Objective-C++': 'Obj-C++',
+        'CoffeeScript': 'Coffee'
+    };
+    function shortName(n) { return SHORT[n] || n; }
+
     function escapeHtml(s) {
         return String(s).replace(/[&<>"]/g, function (c) {
             return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
@@ -180,7 +192,7 @@
         segs.forEach(function (s) {
             legend += '<span class="gl-item">'
                 + '<span class="gl-dot" style="background:' + s.color + '"></span>'
-                + '<span class="gl-name">' + escapeHtml(s.name) + '</span>'
+                + '<span class="gl-name" title="' + escapeHtml(s.name) + '">' + escapeHtml(shortName(s.name)) + '</span>'
                 + '<span class="gl-pct">' + s.pct.toFixed(1) + '%</span>'
                 + '</span>';
         });
