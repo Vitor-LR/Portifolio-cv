@@ -109,30 +109,89 @@
         syncHidden();
     }
 
-    function openMenu() { menu.classList.add('is-open'); flagBtn.setAttribute('aria-expanded', 'true'); }
-    function closeMenu() { menu.classList.remove('is-open'); flagBtn.setAttribute('aria-expanded', 'false'); }
+    /* ---------- abrir / fechar ---------- */
+    function openMenu(focusList) {
+        menu.classList.add('is-open');
+        flagBtn.setAttribute('aria-expanded', 'true');
+        // ao abrir via teclado, leva o foco para a opção atualmente selecionada
+        if (focusList) {
+            var sel = menu.querySelector('.phone-opt.is-active');
+            focusOption(sel ? opts.indexOf(sel) : 0);
+        }
+    }
+    function closeMenu(returnFocus) {
+        menu.classList.remove('is-open');
+        flagBtn.setAttribute('aria-expanded', 'false');
+        if (returnFocus) flagBtn.focus();
+    }
     function isOpen() { return menu.classList.contains('is-open'); }
 
+    /* ---------- foco entre opções (roving tabindex) ----------
+       Só a opção "ativa" fica tabbável; as setas movem o foco entre elas.
+       Isso torna o listbox utilizável 100% por teclado, como o ARIA promete. */
+    var activeIndex = opts.indexOf(menu.querySelector('.phone-opt.is-active'));
+    if (activeIndex < 0) activeIndex = 0;
+    opts.forEach(function (o) { o.setAttribute('tabindex', '-1'); });
+
+    function focusOption(i) {
+        activeIndex = Math.max(0, Math.min(opts.length - 1, i));
+        opts.forEach(function (o, idx) { o.setAttribute('tabindex', idx === activeIndex ? '0' : '-1'); });
+        opts[activeIndex].focus();
+    }
+
+    /* ---------- mouse ---------- */
     flagBtn.addEventListener('click', function (e) {
         e.stopPropagation();
-        if (isOpen()) closeMenu(); else openMenu();
+        if (isOpen()) closeMenu(); else openMenu(false);
     });
 
-    opts.forEach(function (li) {
+    opts.forEach(function (li, idx) {
         li.addEventListener('click', function () {
+            activeIndex = idx;          // mantém o índice sincronizado com o mouse
             select(li);
             closeMenu();
             input.focus();
         });
     });
 
+    /* ---------- teclado no botão (abre e entra na lista) ---------- */
+    flagBtn.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            if (!isOpen()) openMenu(true);
+            else focusOption(activeIndex);
+        }
+    });
+
+    /* ---------- teclado dentro da lista ---------- */
+    menu.addEventListener('keydown', function (e) {
+        if (!isOpen()) return;
+        switch (e.key) {
+            case 'ArrowDown': e.preventDefault(); focusOption(activeIndex + 1); break;
+            case 'ArrowUp':   e.preventDefault(); focusOption(activeIndex - 1); break;
+            case 'Home':      e.preventDefault(); focusOption(0); break;
+            case 'End':       e.preventDefault(); focusOption(opts.length - 1); break;
+            case 'Enter':
+            case ' ':
+                e.preventDefault();
+                select(opts[activeIndex]);
+                closeMenu(true);        // confirma e devolve o foco ao botão
+                break;
+            case 'Tab':
+                closeMenu(false);       // sai naturalmente para o próximo campo
+                break;
+            // Escape é tratado pelo listener global abaixo
+        }
+    });
+
     input.addEventListener('input', reformat);
 
+    /* ---------- fechar clicando fora / Escape ---------- */
     document.addEventListener('click', function (e) {
         if (isOpen() && !group.contains(e.target)) closeMenu();
     });
     document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && isOpen()) { closeMenu(); flagBtn.focus(); }
+        if (e.key === 'Escape' && isOpen()) closeMenu(true);
     });
 
     // estado inicial (Brasil)

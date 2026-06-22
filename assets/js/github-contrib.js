@@ -54,12 +54,44 @@
             String(d.getDate()).padStart(2, '0');
     }
 
+    /* ---- cache em localStorage (evita esbarrar no rate-limit da API) ----
+       1) cache fresco (< TTL)  → usa direto, sem nova requisição;
+       2) API falhou            → usa o último cache salvo (mesmo vencido);
+       3) sem cache             → mostra a mensagem de erro. */
+    var CACHE_KEY = 'ghContrib:v1:' + user;
+    var TTL = 6 * 60 * 60 * 1000;   // 6 horas
+
+    function readCache() {
+        try {
+            var obj = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+            if (obj && obj.t && Array.isArray(obj.list)) return obj;
+        } catch (e) {}
+        return null;
+    }
+    function writeCache(list) {
+        try { localStorage.setItem(CACHE_KEY, JSON.stringify({ t: Date.now(), list: list })); } catch (e) {}
+    }
+
     msg('carregando contribuições…');
 
+    // 1) cache ainda fresco → usa direto, sem bater na API
+    var cached = readCache();
+    if (cached && (Date.now() - cached.t) < TTL) { render(cached.list); return; }
+
+    // 2) busca na API; em falha usa o cache (mesmo vencido), se houver
     fetch('https://github-contributions-api.jogruber.de/v4/' + encodeURIComponent(user) + '?y=last')
         .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
-        .then(function (data) { render(data && data.contributions ? data.contributions : []); })
-        .catch(function () { msg('não foi possível carregar as contribuições'); });
+        .then(function (data) {
+            var list = data && data.contributions ? data.contributions : [];
+            if (!list.length) throw new Error('sem dados');
+            writeCache(list);
+            render(list);
+        })
+        .catch(function () {
+            var c = readCache();                       // último cache salvo (mesmo vencido)
+            if (c) { render(c.list); return; }
+            msg('não foi possível carregar as contribuições');
+        });
 
     function render(list) {
         if (!list.length) { msg('sem dados de contribuição'); return; }

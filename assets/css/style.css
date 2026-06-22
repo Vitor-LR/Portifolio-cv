@@ -129,10 +129,11 @@ html {
     cursor: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20d%3D%22M2.5%201.5%20L2.5%2016%20L6%2012.6%20L8.4%2017.8%20L10.4%2016.9%20L8%2011.8%20L13%2011.8%20Z%22%20fill%3D%22%23000000%22%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%221.2%22%20stroke-linejoin%3D%22round%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E") 3 2, auto;
 }
 
-/* wrapper do efeito elástico — sem will-change permanente (evita manter uma
-   camada gigante na GPU o tempo todo). O translate3d já compõe na GPU
-   durante o overscroll. */
-.elastic-wrap { backface-visibility: hidden; }
+/* wrapper do efeito elástico — SEM transform/will-change permanentes.
+   Em repouso é um bloco comum (não vira containing block), então
+   position: sticky em descendentes (ex.: .case-aside) funciona normalmente.
+   A composição na GPU é ligada só durante o overscroll, via JS (will-change). */
+.elastic-wrap { will-change: auto; }
 
 body {
     background-color: var(--bg);
@@ -509,6 +510,9 @@ body::before {
     margin-bottom: 1rem;
 }
 .page-top-row .eyebrow { margin-bottom: 0; }
+/* sem o traço à esquerda aqui: como o .page-top-row já centraliza (justify-content:center)
+   e o botão "voltar" é absoluto (fora do fluxo), o texto fica centralizado de fato. */
+.page-top-row .eyebrow::before { display: none; }
 /* botão "voltar" do todos-projetos (ancorado à esquerda, centralizado na vertical) */
 .back-round {
     position: absolute;

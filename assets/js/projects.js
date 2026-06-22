@@ -91,92 +91,6 @@ window.PROJETOS = [
         demo: '#'
     },
 
-    /* === PROJETOS DE TESTE (carrossel) — PODE EXCLUIR ========================
-       Adicionados só pra visualizar o carrossel (com 7 vira 2 páginas).
-       Não têm imagem (usam o glyph). Apague os DOIS blocos abaixo quando
-       não precisar mais — e devolva a vírgula do projeto acima se sumir. */
-    {
-        titulo: 'Projeto Teste 6',
-        categoria: 'Teste',
-        glyph: '✦ Teste 6',
-        descricao: 'Projeto de teste apenas para visualizar o carrossel em funcionamento.',
-        tags: ['Teste', 'Demo'],
-        pagina: '#',
-        codigo: 'https://github.com/',
-        demo: '#'
-    },
-    {
-        titulo: 'Projeto Teste 7',
-        categoria: 'Teste',
-        glyph: '✦ Teste 7',
-        descricao: 'Segundo projeto de teste, para gerar a segunda página do carrossel.',
-        tags: ['Teste', 'Demo'],
-        pagina: '#',
-        codigo: 'https://github.com/',
-        demo: '#'
-    },
-    {
-        titulo: 'Projeto Teste 8',
-        categoria: 'Teste',
-        glyph: '✦ Teste 8',
-        descricao: 'Projeto de teste para preencher o carrossel.',
-        tags: ['Teste', 'Demo'],
-        pagina: '#',
-        codigo: 'https://github.com/',
-        demo: '#'
-    },
-    {
-        titulo: 'Projeto Teste 9',
-        categoria: 'Teste',
-        glyph: '✦ Teste 9',
-        descricao: 'Projeto de teste para preencher o carrossel.',
-        tags: ['Teste', 'Demo'],
-        pagina: '#',
-        codigo: 'https://github.com/',
-        demo: '#'
-    },
-    {
-        titulo: 'Projeto Teste 10',
-        categoria: 'Teste',
-        glyph: '✦ Teste 10',
-        descricao: 'Projeto de teste para preencher o carrossel.',
-        tags: ['Teste', 'Demo'],
-        pagina: '#',
-        codigo: 'https://github.com/',
-        demo: '#'
-    },
-    {
-        titulo: 'Projeto Teste 11',
-        categoria: 'Teste',
-        glyph: '✦ Teste 11',
-        descricao: 'Projeto de teste para preencher o carrossel.',
-        tags: ['Teste', 'Demo'],
-        pagina: '#',
-        codigo: 'https://github.com/',
-        demo: '#'
-    },
-    {
-        titulo: 'Projeto Teste 12',
-        categoria: 'Teste',
-        glyph: '✦ Teste 12',
-        descricao: 'Projeto de teste para preencher o carrossel.',
-        tags: ['Teste', 'Demo'],
-        pagina: '#',
-        codigo: 'https://github.com/',
-        demo: '#'
-    },
-    {
-        titulo: 'Projeto Teste 13',
-        categoria: 'Teste',
-        glyph: '✦ Teste 13',
-        descricao: 'Projeto de teste, gera a terceira página do carrossel.',
-        tags: ['Teste', 'Demo'],
-        pagina: '#',
-        codigo: 'https://github.com/',
-        demo: '#'
-    }
-    /* === FIM DOS PROJETOS DE TESTE ========================================= */
-
     // ⬇️ Novos projetos entram aqui. Os que ficarem após o 4º
     //    aparecem APENAS na página "todos os projetos".
     // ,{
@@ -191,7 +105,6 @@ window.PROJETOS = [
     // }
 
 ];
-
 
 /* ============================================================
    RENDERIZAÇÃO — não precisa mexer daqui para baixo.

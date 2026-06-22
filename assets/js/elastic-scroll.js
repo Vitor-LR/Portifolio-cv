@@ -10,8 +10,16 @@
    Sem timers competindo => sem tremor.
 
    Envolve só <main> + <footer>; header (fixo) e canvas de fundo ficam
-   de fora. Em repouso o transform é removido (none). Desativado com
-   prefers-reduced-motion.
+   de fora. Desativado com prefers-reduced-motion.
+
+   >>> INTERAÇÃO COM position: sticky (ex.: .case-aside nas páginas de
+   projeto): durante o overscroll o wrapper recebe um translate, então a
+   sidebar sticky "balança junto" com a página — que é o efeito desejado
+   (tudo se move como um bloco coeso). O ponto crítico é NÃO deixar um
+   transform/will-change PERMANENTE no wrapper: isso, sim, faria o sticky
+   parar de grudar. Por isso, em repouso, `settle()` limpa transform e
+   will-change por completo — o wrapper volta a ser um bloco comum e o
+   sticky funciona normalmente. <<<
    ============================================================ */
 (function () {
     'use strict';
@@ -43,16 +51,27 @@
         return Math.ceil(window.scrollY + window.innerHeight) >= document.documentElement.scrollHeight - 1;
     }
     function apply(v) {
-        wrap.style.transform = v ? 'translate3d(0,' + v.toFixed(2) + 'px,0)' : '';
+        wrap.style.transform = 'translate3d(0,' + v.toFixed(2) + 'px,0)';
+    }
+
+    /* Em repouso: zera o deslocamento e REMOVE transform + will-change.
+       Sem nenhuma dessas propriedades, o wrapper deixa de ser "containing
+       block", e qualquer position: sticky descendente volta a se referenciar
+       na viewport normalmente. */
+    function settle() {
+        rendered = 0;
+        target = 0;
+        wrap.style.transform = '';
+        wrap.style.willChange = '';
+        ticking = false;
     }
 
     function loop() {
         if (!holding) target *= SPRING;            // mola: volta a 0
         rendered += (target - rendered) * EASE;    // segue o alvo suavemente
         if (!holding && Math.abs(target) < 0.25 && Math.abs(rendered) < 0.25) {
-            rendered = 0; target = 0; apply(0);
-            wrap.style.willChange = '';            // libera a camada da GPU ao parar
-            ticking = false; return;
+            settle();                              // libera a GPU e destrava o sticky
+            return;
         }
         apply(rendered);
         requestAnimationFrame(loop);

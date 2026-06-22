@@ -200,14 +200,27 @@
         const map = {};
         navAnchors.forEach(a => { map[a.getAttribute('href').slice(1)] = a; });
 
+        // Em vez de reagir a cada entrada isolada (que pisca quando duas seções
+        // cruzam o limite ao mesmo tempo), mantemos o conjunto de seções visíveis
+        // e destacamos sempre a primeira na ordem do documento — resultado estável.
+        const orderedIds = Array.prototype.map.call(sections, s => s.id);
+        const visible = new Set();
+
+        function setActive() {
+            let activeId = null;
+            for (const id of orderedIds) {
+                if (visible.has(id)) { activeId = id; break; }
+            }
+            navAnchors.forEach(a => a.classList.remove('active'));
+            if (activeId && map[activeId]) map[activeId].classList.add('active');
+        }
+
         const navObs = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    navAnchors.forEach(a => a.classList.remove('active'));
-                    const active = map[entry.target.id];
-                    if (active) active.classList.add('active');
-                }
+                if (entry.isIntersecting) visible.add(entry.target.id);
+                else visible.delete(entry.target.id);
             });
+            setActive();
         }, { rootMargin: '-45% 0px -50% 0px' });
 
         sections.forEach(s => navObs.observe(s));
@@ -215,8 +228,8 @@
 
     /* ========================================================
        5. TERMINAL DO HERO — digitação linha a linha
-       Lê as linhas de #term-script (data-attrs) e "digita".
-       Pula a animação no prefers-reduced-motion.
+       As linhas ficam no array `lines` abaixo (conteúdo fixo); o
+       efeito "digita" cada uma. Pula a animação no prefers-reduced-motion.
        ======================================================== */
     const term = document.getElementById('terminal-out');
     if (term) {
@@ -244,10 +257,19 @@
             ['term-str', '✓ aberto a novas oportunidades']
         ];
 
+        // Monta tudo de uma vez. Usa textContent (igual à digitação) — sem
+        // innerHTML — para tratar o conteúdo sempre como texto, de forma
+        // consistente. Linha vazia recebe um espaço não-quebrável.
         function renderAll() {
-            term.innerHTML = lines.map(([cls, txt]) =>
-                `<div class="line ${cls}">${txt || '&nbsp;'}</div>`
-            ).join('');
+            term.innerHTML = '';
+            const frag = document.createDocumentFragment();
+            lines.forEach(([cls, txt]) => {
+                const div = document.createElement('div');
+                div.className = 'line ' + cls;
+                div.textContent = txt || '\u00A0';
+                frag.appendChild(div);
+            });
+            term.appendChild(frag);
         }
 
         if (prefersReduced) {

@@ -1,8 +1,8 @@
 /* ============================================================
    "Ler mais" na seção Sobre.
-   Quando a tela reduz a ponto do texto passar de 10 linhas, o texto é
-   recortado nessas 10 linhas (com um leve fade) e aparece um botão
-   "ler mais" para abrir o restante. Cabendo em até 10 linhas, mostra tudo
+   Quando a tela reduz a ponto do texto passar de MAX_LINES (7), o texto é
+   recortado nessas linhas (com um leve fade) e aparece um botão
+   "ler mais" para abrir o restante. Cabendo em até MAX_LINES, mostra tudo
    e o botão some. Reavalia ao redimensionar e quando as fontes carregam.
    ============================================================ */
 (function () {

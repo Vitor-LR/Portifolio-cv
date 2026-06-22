@@ -45,15 +45,43 @@
 
     function nfmt(n) { return (n == null ? 0 : n).toLocaleString('pt-BR'); }
 
+    /* ---- cache em localStorage (endpoint de terceiros pode instabilizar) ----
+       1) cache fresco (< TTL)  → usa direto;
+       2) API falhou            → usa o último cache salvo (mesmo vencido);
+       3) sem cache             → mostra a mensagem de erro. */
+    var CACHE_KEY = 'lcStats:v1:' + user;
+    var TTL = 6 * 60 * 60 * 1000;   // 6 horas
+
+    function readCache() {
+        try {
+            var obj = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+            if (obj && obj.t && obj.data) return obj;
+        } catch (e) {}
+        return null;
+    }
+    function writeCache(data) {
+        try { localStorage.setItem(CACHE_KEY, JSON.stringify({ t: Date.now(), data: data })); } catch (e) {}
+    }
+
     msg('carregando estatísticas…');
 
+    // 1) cache ainda fresco → usa direto
+    var cached = readCache();
+    if (cached && (Date.now() - cached.t) < TTL) { render(cached.data); return; }
+
+    // 2) busca na API; em falha usa o cache (mesmo vencido), se houver
     fetch(ENDPOINT + encodeURIComponent(user))
         .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
         .then(function (d) {
             if (!d || d.status === 'error' || d.totalSolved == null) throw new Error('sem dados');
+            writeCache(d);
             render(d);
         })
-        .catch(function () { msg('não foi possível carregar o LeetCode'); });
+        .catch(function () {
+            var c = readCache();                       // último cache salvo (mesmo vencido)
+            if (c) { render(c.data); return; }
+            msg('não foi possível carregar o LeetCode');
+        });
 
     function bar(solved, total, color) {
         var pct = total > 0 ? Math.min(100, solved / total * 100) : 0;
