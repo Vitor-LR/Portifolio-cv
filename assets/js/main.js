@@ -24,7 +24,8 @@
     const header = document.querySelector('.header');
     if (header) {
         const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 12);
-        onScroll();
+        // leitura inicial no próximo frame: tira o getter de scrollY do init síncrono
+        requestAnimationFrame(onScroll);
         window.addEventListener('scroll', onScroll, { passive: true });
     }
 

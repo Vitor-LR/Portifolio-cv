@@ -87,13 +87,13 @@
     // Como o min-height fica só no cabeçalho, expandir um card NÃO estica os
     // vizinhos (eles continuam recolhidos na altura do cabeçalho).
     function equalizeHeaders() {
-        items.forEach(function (it) { it.btn.style.minHeight = ''; });   // reset
+        // FASE DE ESCRITA: zera todas as alturas de uma vez
+        items.forEach(function (it) { it.btn.style.minHeight = ''; });
         if (!container.classList.contains('is-collapsible')) return;     // desktop: sem igualar
-        var max = 0;
-        items.forEach(function (it) {
-            var h = it.btn.getBoundingClientRect().height;               // força reflow já limpo
-            if (h > max) max = h;
-        });
+        // FASE DE LEITURA: mede todas as alturas (um único reflow; reads em lote)
+        var heights = items.map(function (it) { return it.btn.getBoundingClientRect().height; });
+        var max = Math.max.apply(null, heights);
+        // FASE DE ESCRITA: aplica a maior altura a todos
         if (max > 0) {
             items.forEach(function (it) { it.btn.style.minHeight = max + 'px'; });
         }
@@ -121,7 +121,8 @@
         equalizeHeaders();
     }
 
-    evaluate();
+    // 1ª medição após o primeiro paint (não no init síncrono, que somava reflow)
+    requestAnimationFrame(evaluate);
 
     var t;
     window.addEventListener('resize', function () {

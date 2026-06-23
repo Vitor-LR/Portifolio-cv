@@ -36,8 +36,6 @@
             .getPropertyValue('--particle-rgb').trim();
         if (rgb) COLOR = 'rgba(' + rgb + ',';
     }
-    readParticleColor();
-
     // Recolore quando o tema muda (evento disparado pelo main.js)
     window.addEventListener('themechange', readParticleColor);
 
@@ -140,6 +138,19 @@
         resizeTimer = setTimeout(resize, 200);
     });
 
-    resize();
-    start();
+    // Inicialização DIFERIDA: 'resize' lê innerWidth/Height e 'readParticleColor'
+    // faz getComputedStyle — leituras que, no caminho crítico, forçam reflow e
+    // adiam a renderização. Como o canvas é puramente decorativo e fica atrás do
+    // conteúdo, esperamos o navegador ficar ocioso (ou o próximo frame) para iniciar.
+    function init() {
+        readParticleColor();
+        resize();
+        start();
+    }
+    if ('requestIdleCallback' in window) {
+        requestIdleCallback(init, { timeout: 1500 });
+    } else {
+        // fallback: dois rAF garantem que rode após o primeiro paint
+        requestAnimationFrame(function () { requestAnimationFrame(init); });
+    }
 })();

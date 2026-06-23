@@ -119,7 +119,9 @@
         if (expanded) expand(); else collapse();
     });
 
-    evaluate();
+    // 1ª medição após o primeiro paint (fora do init síncrono).
+    // O recorte só vale no layout estreito (mqStack), então não há "salto" visível.
+    requestAnimationFrame(evaluate);
 
     var t;
     window.addEventListener('resize', function () {

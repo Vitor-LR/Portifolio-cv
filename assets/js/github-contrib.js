@@ -24,7 +24,13 @@
         .replace(/^@/, '')
         .replace(/\/.*$/, '')
         .trim();
-    var WEEKS = parseInt(mount.dataset.weeks, 10) || 39;
+    // Semanas exibidas: no desktop usa data-weeks (padrão 39 ≈ 9 meses);
+    // no mobile reduz para data-weeks-mobile (padrão 20) — menos <rect> no DOM
+    // e calendário menos espremido em telas estreitas. O desktop fica intacto.
+    var dataWeeks = parseInt(mount.dataset.weeks, 10) || 39;
+    var mobileWeeks = parseInt(mount.dataset.weeksMobile, 10) || 20;
+    var isMobile = window.matchMedia('(max-width: 640px)').matches;
+    var WEEKS = isMobile ? Math.min(dataWeeks, mobileWeeks) : dataWeeks;
 
     // preenche o link do card a partir do usuário (fonte única da verdade)
     var link = document.getElementById('gh-contrib-link');
