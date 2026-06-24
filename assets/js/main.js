@@ -30,6 +30,26 @@
     }
 
     /* ========================================================
+       1b. BARRA DE PROGRESSO DE LEITURA
+       ======================================================== */
+    (function scrollProgress() {
+        const bar = document.getElementById('scroll-progress');
+        if (!bar) return;
+        let ticking = false;
+        function update() {
+            const h = document.documentElement;
+            const max = h.scrollHeight - h.clientHeight;
+            const p = max > 0 ? h.scrollTop / max : 0;
+            bar.style.transform = 'scaleX(' + p.toFixed(4) + ')';
+            ticking = false;
+        }
+        window.addEventListener('scroll', function () {
+            if (!ticking) { ticking = true; requestAnimationFrame(update); }
+        }, { passive: true });
+        update();
+    })();
+
+    /* ========================================================
        2. MENU MOBILE
        ======================================================== */
     const menuToggle = document.getElementById('menu-icon');
@@ -96,7 +116,7 @@
 
     (function initTheme() {
         let saved = null;
-        try { saved = localStorage.getItem('theme'); } catch (e) {}
+        try { saved = localStorage.getItem('theme'); } catch (e) { }
         const current = saved
             || (document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark');
         applyTheme(current);
@@ -106,7 +126,7 @@
         themeToggle.addEventListener('click', () => {
             const isLight = document.documentElement.getAttribute('data-theme') === 'light';
             const next = isLight ? 'dark' : 'light';
-            try { localStorage.setItem('theme', next); } catch (e) {}
+            try { localStorage.setItem('theme', next); } catch (e) { }
             applyTheme(next);
         });
     }

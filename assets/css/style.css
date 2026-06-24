@@ -350,6 +350,7 @@ body::before {
     box-shadow: var(--glow);
 }
 
+
 /* No tema claro o gradiente vivo + glow ciano ficava forte demais; aqui um
    azul mais discreto e sombra leve (o tema escuro continua igual). */
 [data-theme="light"] .btn--primary {
@@ -2143,6 +2144,45 @@ body::before {
     box-shadow: 0 0 0 3px rgba(var(--particle-rgb), 0.14);
 }
 
+/* ============================================================
+   PREENCHIMENTO AUTOMÁTICO (autofill)
+   O navegador pinta um fundo claro nos campos autopreenchidos e
+   ignora background-color. O box-shadow interno recobre esse fundo
+   com a cor do tema; a transition longa impede o flash de cor.
+   ============================================================ */
+
+/* campos normais (Nome, E-mail, Assunto) */
+.form-field input:-webkit-autofill,
+.form-field input:-webkit-autofill:hover,
+.form-field input:-webkit-autofill:focus,
+.form-field input:-webkit-autofill:active,
+.form-field textarea:-webkit-autofill,
+.form-field textarea:-webkit-autofill:hover,
+.form-field textarea:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--text);
+    -webkit-box-shadow: 0 0 0 1000px #0D1324 inset;   /* ≈ --input-bg sobre o card (escuro) */
+    caret-color: var(--text);
+    transition: background-color 9999s ease-out 0s;
+}
+
+/* tema claro: o campo é branco */
+[data-theme="light"] .form-field input:-webkit-autofill,
+[data-theme="light"] .form-field input:-webkit-autofill:hover,
+[data-theme="light"] .form-field input:-webkit-autofill:focus,
+[data-theme="light"] .form-field textarea:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px #FFFFFF inset;
+}
+
+/* telefone: NÃO leva box-shadow (a moldura é o .phone-group);
+   mantém transparente e só evita o flash */
+.phone-group #telefone-input:-webkit-autofill,
+.phone-group #telefone-input:-webkit-autofill:hover,
+.phone-group #telefone-input:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--text);
+    caret-color: var(--text);
+    transition: background-color 9999s ease-out 0s;
+}
+
 /* ----- Telefone com seletor de país (bandeira no fim) ----- */
 .phone-group {
     position: relative;
@@ -2881,6 +2921,28 @@ body::before {
 }
 ::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
 html { scrollbar-color: var(--scrollbar-thumb) var(--bg); }
+
+/* ============================================================
+   BARRA DE PROGRESSO DE LEITURA (topo)
+   Usa --gradient e --particle-rgb → acompanha tema claro/escuro.
+   ============================================================ */
+.scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: 100%;
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    background: var(--gradient);
+    box-shadow: 0 0 10px rgba(var(--particle-rgb), 0.45);
+    z-index: 1001;   /* acima do header (1000) */
+    pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .scroll-progress { transition: none; }
+}
 
 /* ============================================================
    RESPONSIVO
