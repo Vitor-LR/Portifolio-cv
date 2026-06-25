@@ -8,6 +8,10 @@
      oculto (name="Telefone") envia "<PAÍS> <código> <número>", ex.:
        "US +1 (555) 123-4567"  ·  "BR (31) 91234-6789"
      → o contact-form.js não precisa de nenhuma alteração.
+   - Autofill: o navegador costuma preencher no formato internacional
+     completo (ex.: +55 31 97246-4431). A função stripCC() remove esse
+     código do país quando ele vem embutido, de forma que o número
+     comece sempre no número nacional (no Brasil, direto no DDD).
    ============================================================ */
 (function () {
     'use strict';
@@ -48,6 +52,28 @@
         var n = (p.match(/#/g) || []).length;
         return n || 15;
     }
+
+    /* Código de chamada de cada país (em dígitos). Brasil = 55, mesmo sem
+       exibir o +55 na interface. Usado para remover o código que o autofill
+       do navegador insere — assim o número começa no número nacional
+       (no Brasil, direto no DDD). */
+    var CALLING = {
+        BR: '55', PT: '351', US: '1', CA: '1', DE: '49',
+        FR: '33', GB: '44', ES: '34', NL: '31', AU: '61'
+    };
+
+    /* Remove o código do país SE ele veio embutido (caso típico do autofill).
+       Só remove quando o número passa do tamanho nacional E começa com o código
+       — assim um DDD legítimo igual ao código (ex.: DDD 55) não é confundido,
+       pois um número nacional nunca ultrapassa maxDigits. */
+    function stripCC(iso, digits) {
+        var cc = CALLING[iso];
+        if (cc && digits.length > maxDigits(iso) && digits.indexOf(cc) === 0) {
+            return digits.slice(cc.length);
+        }
+        return digits;
+    }
+
     function format(iso, digits) {
         var pattern = maskFor(iso, digits);
         if (!pattern) return digits;
@@ -67,7 +93,8 @@
         hidden.value = current.iso + ' ' + (current.code ? current.code + ' ' : '') + num;
     }
 
-    /* reformata preservando a posição do cursor (conta dígitos à esquerda) */
+    /* reformata preservando a posição do cursor (conta dígitos à esquerda)
+       e removendo o código do país caso o autofill o tenha inserido. */
     function reformat() {
         var iso = current.iso;
         var oldVal = input.value;
@@ -75,12 +102,20 @@
         if (caret == null) caret = oldVal.length;
 
         var digitsBeforeCaret = (oldVal.slice(0, caret).match(/\d/g) || []).length;
-        var digits = (oldVal.match(/\d/g) || []).join('').slice(0, maxDigits(iso));
+
+        var allDigits = (oldVal.match(/\d/g) || []).join('');
+        var stripped = stripCC(iso, allDigits);            // tira o código do país (autofill)
+        var removed = allDigits.length - stripped.length;  // quantos dígitos saíram do início
+        var digits = stripped.slice(0, maxDigits(iso));
         var formatted = format(iso, digits);
         input.value = formatted;
 
+        // posição do cursor: desconta os dígitos removidos do prefixo
+        var target = digitsBeforeCaret - removed;
+        if (target < 0) target = 0;
+
         var pos = 0, seen = 0;
-        while (pos < formatted.length && seen < digitsBeforeCaret) {
+        while (pos < formatted.length && seen < target) {
             if (/\d/.test(formatted.charAt(pos))) seen++;
             pos++;
         }
@@ -104,7 +139,7 @@
         if (ph) input.placeholder = ph;
 
         // re-formata o que já estava digitado no novo formato do país
-        var digits = (input.value.match(/\d/g) || []).join('').slice(0, maxDigits(current.iso));
+        var digits = stripCC(current.iso, (input.value.match(/\d/g) || []).join('')).slice(0, maxDigits(current.iso));
         input.value = format(current.iso, digits);
         syncHidden();
     }
@@ -185,6 +220,8 @@
     });
 
     input.addEventListener('input', reformat);
+    // autofill às vezes dispara 'change' em vez de 'input' (varia por navegador)
+    input.addEventListener('change', reformat);
 
     /* ---------- fechar clicando fora / Escape ---------- */
     document.addEventListener('click', function (e) {
