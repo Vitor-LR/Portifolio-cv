@@ -128,6 +128,16 @@
             const next = isLight ? 'dark' : 'light';
             try { localStorage.setItem('theme', next); } catch (e) { }
             applyTheme(next);
+
+            /* dispara o "pop" + anel. O reflow força o navegador a
+               reiniciar a animação quando clicam várias vezes seguidas. */
+            themeToggle.classList.remove('is-switching');
+            void themeToggle.offsetWidth;
+            themeToggle.classList.add('is-switching');
+        });
+
+        themeToggle.addEventListener('animationend', () => {
+            themeToggle.classList.remove('is-switching');
         });
     }
 
