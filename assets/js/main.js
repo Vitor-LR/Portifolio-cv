@@ -451,13 +451,28 @@
 
     /* ========================================================
        8. CANAIS DE CONTATO — copiar texto sem disparar o link
-       Se houver texto selecionado ao soltar o clique, cancela a
-       navegação (deixa o usuário arrastar p/ selecionar e copiar).
+       Se houver texto selecionado DENTRO deste canal ao soltar o
+       clique, cancela a navegação (deixa arrastar p/ selecionar).
+
+       Duas checagens que faltavam e travavam o link no desktop:
+
+       - window.getSelection() é do documento inteiro. Texto
+         selecionado em qualquer outro ponto da página deixava
+         TODOS os canais mortos até alguém clicar no vazio.
+       - isCollapsed distingue "cursor pousado" de "trecho
+         marcado". Sem isso, um clique comum já bastava.
+
+       No celular não aparecia porque um toque não cria seleção —
+       precisa segurar. Por isso só falhava no PC.
        ======================================================== */
     document.querySelectorAll('.channel').forEach(ch => {
         ch.addEventListener('click', e => {
             const sel = window.getSelection();
-            if (sel && sel.toString().trim().length > 0) e.preventDefault();
+            if (!sel || sel.isCollapsed) return;
+            if (sel.toString().trim().length === 0) return;
+
+            const dentroDeste = sel.anchorNode && ch.contains(sel.anchorNode);
+            if (dentroDeste) e.preventDefault();
         });
     });
 
