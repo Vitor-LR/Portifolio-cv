@@ -89,7 +89,7 @@
         'As linguagens, bancos e ferramentas que uso para construir, versionar e colocar aplicações em produção.':
             'The languages, databases and tools I use to build, version and ship applications to production.',
         'Responsivo': 'Responsive',
-        'Linguagens programação': 'Programming languages',
+        'Linguagens de Programação': 'Programming languages',
         'Banco de Dados': 'Databases',
 
         /* ---------- projetos (home + todos) ---------- */
@@ -215,6 +215,30 @@
         'defina seu usuário do GitHub (data-user)': 'set your GitHub username (data-user)',
         'Calendário de contribuições do GitHub': 'GitHub contributions calendar',
         'Ver perfil no GitHub': 'See GitHub profile',
+
+        /* Heatmap do GitHub: abreviacoes de mes e de dia da semana.
+           github-contrib.js injeta esses rotulos depois do load; o
+           MutationObserver do i18n pega e traduz. So entram aqui as
+           que mudam de fato — Jan/Mar/Jun/Jul/Nov sao iguais nos
+           dois idiomas e ficam de fora de proposito. */
+        'Fev': 'Feb',
+        'Abr': 'Apr',
+        'Mai': 'May',
+        'Ago': 'Aug',
+        'Set': 'Sep',
+        'Out': 'Oct',
+        'Dez': 'Dec',
+        'Seg': 'Mon',
+        'Ter': 'Tue',
+        'Qua': 'Wed',
+        'Qui': 'Thu',
+        'Sex': 'Fri',
+        'Sáb': 'Sat',
+        'Dom': 'Sun',
+
+        /* Botao de cada experiencia (experience-collapse.js) */
+        'detalhes': 'details',
+        'ocultar': 'hide',
 
         /* modais do formulário */
         'Quase lá': 'Almost there',

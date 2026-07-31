@@ -24,19 +24,33 @@
 
         var id = 'tg-desc-' + i;
 
-        // cabeçalho vira botão + chevron; o texto do título vai num .tg-label
-        // (permite quebrar/hifenizar palavras longas sem empurrar a seta)
+        /* Cabeçalho vira botão + chevron; o texto do título vai num .tg-label
+           (permite quebrar/hifenizar palavras longas sem empurrar a seta).
+
+           IMPORTANTE — os nós de texto originais são MOVIDOS para dentro
+           do .tg-label, nunca recriados. O i18n.js guarda uma referência ao
+           nó de texto para restaurar o português; se aqui fôssemos ler
+           h3.textContent e criar um nó novo, a referência guardada
+           apontaria para um nó já descartado e o título ficaria preso em
+           inglês ao voltar para PT (era o bug de "Programming languages" /
+           "Databases" aparecendo no modo português). */
         var ico = h3.querySelector('.tg-ico');
-        var labelText = h3.textContent.trim();
-        h3.innerHTML = '';                       // limpa o título original (evita duplicar)
         var btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'tg-toggle';
         btn.setAttribute('aria-controls', id);
-        if (ico) btn.appendChild(ico);
+
         var label = document.createElement('span');
         label.className = 'tg-label';
-        label.textContent = labelText;
+
+        // snapshot antes de mover (childNodes é uma lista viva)
+        var kids = Array.prototype.slice.call(h3.childNodes);
+        kids.forEach(function (n) {
+            if (n === ico) return;               // o ícone vai direto no botão
+            label.appendChild(n);                // move o nó, preservando a referência
+        });
+
+        if (ico) btn.appendChild(ico);
         btn.appendChild(label);
         btn.insertAdjacentHTML('beforeend',
             '<svg class="tg-chevron" viewBox="0 0 24 24" aria-hidden="true">' +
