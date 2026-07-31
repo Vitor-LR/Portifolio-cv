@@ -175,25 +175,45 @@
         var dados = new FormData(form);
         dados.set('_captcha', 'false');
 
+        /* ---- DIAGNÓSTICO ----------------------------------------
+           Enquanto o envio estiver falhando, tudo que o FormSubmit
+           responde vai para o console (F12 → Console). Depois que
+           voltar a funcionar, dá para remover os console.log. */
+        var status = 0;
+
         fetch(ENDPOINT, {
             method: 'POST',
             headers: { 'Accept': 'application/json' },
             body: dados
         })
-            .then(function (r) { return r.json().catch(function () { return {}; }); })
-            .then(function (res) {
+            .then(function (r) {
+                status = r.status;
+                return r.text();                       // texto cru, nunca quebra
+            })
+            .then(function (raw) {
+                console.log('[contact-form] endpoint:', ENDPOINT);
+                console.log('[contact-form] HTTP', status);
+                console.log('[contact-form] resposta:', raw);
+
+                var res = {};
+                try { res = JSON.parse(raw); } catch (e) { /* veio HTML, não JSON */ }
+
                 var ok = res && (res.success === 'true' || res.success === true);
                 if (ok) {
                     closeModal();        // fecha o "não sou robô"
                     form.reset();        // limpa o formulário
                     openSuccess();       // abre o agradecimento
                 } else {
-                    throw new Error((res && res.message) || 'falha no envio');
+                    throw new Error(
+                        (res && res.message) || ('HTTP ' + status + ' — ' + raw.slice(0, 200))
+                    );
                 }
             })
-            .catch(function () {
+            .catch(function (err) {
+                console.error('[contact-form] falhou:', err);
                 setSending(false);
-                errEl.textContent = t('Não foi possível enviar agora. Tente novamente em instantes.');
+                errEl.textContent = t('Não foi possível enviar agora. Tente novamente em instantes.') +
+                    ' [' + (err && err.message ? err.message : 'erro de rede') + ']';
                 errEl.hidden = false;
             });
     });
