@@ -603,6 +603,7 @@
         if (mqReduce && mqReduce.matches) { setLang(next); return; }
 
         switching = true;
+        syncButtons(next);                       // sigla PT⇄EN gira JÁ, no clique
         var root = document.documentElement;
         root.classList.add('i18n-out');
         setTimeout(function () {
@@ -616,13 +617,16 @@
         }, 190);
     }
 
-    /* -------- botão de idioma (mostra o idioma atual) -------- */
-    function syncButtons() {
+    /* -------- botão de idioma (mostra o idioma atual) --------
+       Aceita um idioma explícito para poder animar a sigla no
+       clique, antes de o resto da troca acontecer. */
+    function syncButtons(l) {
+        l = l || lang;
         var btns = document.querySelectorAll('.lang-toggle');
         Array.prototype.forEach.call(btns, function (b) {
-            b.classList.toggle('is-en', lang === 'en');
-            b.setAttribute('aria-label', lang === 'en' ? 'Switch language to Portuguese' : 'Mudar idioma para inglês');
-            b.setAttribute('title', lang === 'en' ? 'Language: English' : 'Idioma: Português');
+            b.classList.toggle('is-en', l === 'en');
+            b.setAttribute('aria-label', l === 'en' ? 'Switch language to Portuguese' : 'Mudar idioma para inglês');
+            b.setAttribute('title', l === 'en' ? 'Language: English' : 'Idioma: Português');
         });
     }
 
