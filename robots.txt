@@ -4,4 +4,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://vitor-lr.github.io/portifolio-vitor/sitemap.xml
+Sitemap: https://www.vitorlombard.com.br/sitemap.xml
