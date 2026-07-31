@@ -1,7 +1,17 @@
 /* ============================================================
-   Links de e-mail — roteia conforme o aparelho
+   Links de e-mail — ofuscação + roteamento conforme o aparelho
    ------------------------------------------------------------
-   Os dois métodos de abrir um e-mail falham em lugares opostos:
+   OFUSCAÇÃO: o endereço NÃO existe em texto no HTML. Ele fica
+   em Base64 no atributo data-e64 e só é decodificado aqui, em
+   tempo de execução. Coletores de e-mail varrem o HTML estático
+   atrás de "mailto:" e de padrões usuario@dominio — não executam
+   este script, então não encontram nada.
+
+   Para trocar o endereço: btoa('novo@email.com') no console do
+   navegador gera o novo valor de data-e64.
+
+   ROTEAMENTO (mesma lógica de antes): os dois métodos de abrir
+   um e-mail falham em lugares opostos:
 
      mailto:      no celular abre o app nativo (ótimo), mas no PC
                   depende de um cliente instalado. Quem usa webmail
@@ -14,13 +24,17 @@
    Por isso o destino é decidido aqui, e não fixo no HTML: toque
    recebe mailto:, ponteiro fino recebe o Gmail na web.
 
-   O HTML mantém href="mailto:..." como base. Sem JavaScript o
-   link continua válido — só perde o roteamento.
+   Sem JavaScript, o link cai no href="#contato" do HTML (leva a
+   pessoa ao formulário) e o card mostra "use o formulário ao lado".
    ============================================================ */
 (function () {
     'use strict';
 
     var GMAIL = 'https://mail.google.com/mail/?view=cm&fs=1&to=';
+
+    function decodificar(b64) {
+        try { return atob(b64); } catch (e) { return ''; }
+    }
 
     /* Aparelho de toque sem cursor: celular ou tablet. Ali o sistema
        sempre tem um app de e-mail registrado, então mailto: abre o
@@ -35,11 +49,15 @@
 
     function aplicar() {
         var usarApp = preferirAppNativo();
-        var links = document.querySelectorAll('[data-email]');
+        var links = document.querySelectorAll('[data-e64]');
 
         Array.prototype.forEach.call(links, function (a) {
-            var endereco = a.getAttribute('data-email');
-            if (!endereco) return;
+            var endereco = decodificar(a.getAttribute('data-e64'));
+            if (!endereco || endereco.indexOf('@') === -1) return;
+
+            // Escreve o endereço visível no card (se houver o slot)
+            var alvo = a.querySelector('[data-e64-text]');
+            if (alvo) alvo.textContent = endereco;
 
             if (usarApp) {
                 a.setAttribute('href', 'mailto:' + endereco);

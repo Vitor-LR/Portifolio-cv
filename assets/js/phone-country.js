@@ -9,7 +9,7 @@
        "US +1 (555) 123-4567"  ·  "BR (31) 91234-6789"
      → o contact-form.js não precisa de nenhuma alteração.
    - Autofill: o navegador costuma preencher no formato internacional
-     completo (ex.: +55 31 97246-4431). A função stripCC() remove esse
+     completo (ex.: +55 11 98765-4321). A função stripCC() remove esse
      código do país quando ele vem embutido, de forma que o número
      comece sempre no número nacional (no Brasil, direto no DDD).
    ============================================================ */

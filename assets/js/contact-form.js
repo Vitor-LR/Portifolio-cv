@@ -4,9 +4,15 @@
      (sem ir para a página externa do FormSubmit).
    - Confirmando, manda os dados via AJAX para o FormSubmit e, no
      sucesso, abre o popup de agradecimento (sem mudar de página).
-   - Proteção anti-spam: campo honeypot (_honey) no formulário.
+   - Proteção anti-spam: honeypot (_honey), portão de tempo
+     (envios rápidos demais são de robô) e endpoint por random
+     string do FormSubmit — o e-mail de destino não existe em
+     lugar nenhum do código do formulário.
 
-   TROCAR o e-mail abaixo caso mude o destino do FormSubmit.
+   O random string abaixo é o apelido que o FormSubmit dá ao
+   e-mail confirmado. Se um dia trocar o e-mail de destino:
+   ative o novo endereço (1º envio + link de confirmação), copie
+   o novo string da página de confirmação e substitua aqui.
    ============================================================ */
 (function () {
     'use strict';
@@ -14,23 +20,22 @@
     var form = document.querySelector('.contact-form');
     var modal = document.getElementById('cf-modal');
 
-    // Telefone: aceita só números e os sinais + ( ) - e espaço
-    // (remove letras/outros caracteres conforme o usuário digita).
-    var phone = document.getElementById('telefone');
-    if (phone) {
-        phone.addEventListener('input', function () {
-            var clean = phone.value.replace(/[^0-9()+\-\s]/g, '');
-            if (clean !== phone.value) {
-                var pos = phone.selectionStart - (phone.value.length - clean.length);
-                phone.value = clean;
-                try { phone.setSelectionRange(pos, pos); } catch (e) {}
-            }
-        });
-    }
-
     if (!form || !modal) return;
 
-    var ENDPOINT = 'https://formsubmit.co/ajax/vitor04082@gmail.com';
+    var KEY = 'b47b7ea7cf41dc546eea03559f608e0f';   // random string (FormSubmit)
+    var ENDPOINT = 'https://formsubmit.co/ajax/' + KEY;
+
+    // A action do <form> também é definida aqui (fallback pós-JS).
+    form.setAttribute('action', 'https://formsubmit.co/' + KEY);
+
+    /* Portão de tempo: humano leva vários segundos para ler a
+       página, preencher e confirmar o modal. Robô que executa JS
+       envia em fração de segundo. Envios feitos antes de MIN_MS
+       desde o carregamento são descartados em silêncio (o robô
+       recebe o popup de "sucesso" e vai embora achando que enviou). */
+    var carregadoEm = Date.now();
+    var MIN_MS = 4000;
+    function rapidoDemais() { return (Date.now() - carregadoEm) < MIN_MS; }
 
     var robot = document.getElementById('cf-robot');
     var sendBtn = document.getElementById('cf-send');
@@ -60,9 +65,12 @@
         if (lastFocus && lastFocus.focus) lastFocus.focus();
     }
 
+    // Passa pelo tradutor quando o site está em inglês (i18n.js).
+    function t(msg) { return (window.I18N && window.I18N.t) ? window.I18N.t(msg) : msg; }
+
     function setSending(on) {
         sendBtn.disabled = on || !robot.checked;
-        sendBtn.textContent = on ? 'Enviando…' : 'Enviar mensagem';
+        sendBtn.textContent = on ? t('Enviando…') : t('Enviar mensagem');
     }
 
     function openModal() {
@@ -147,13 +155,30 @@
 
     sendBtn.addEventListener('click', function () {
         if (!robot.checked) return;
+
+        /* Anti-spam: honeypot preenchido ou envio rápido demais →
+           finge sucesso sem mandar nada ao servidor. */
+        var honey = form.querySelector('[name="_honey"]');
+        if ((honey && honey.value) || rapidoDemais()) {
+            closeModal();
+            form.reset();
+            openSuccess();
+            return;
+        }
+
         setSending(true);
         errEl.hidden = true;
+
+        /* No HTML, _captcha=true protege o envio clássico (sem JS).
+           A rota AJAX não renderiza captcha, então aqui ele é
+           desligado só neste payload — a página não muda. */
+        var dados = new FormData(form);
+        dados.set('_captcha', 'false');
 
         fetch(ENDPOINT, {
             method: 'POST',
             headers: { 'Accept': 'application/json' },
-            body: new FormData(form)
+            body: dados
         })
             .then(function (r) { return r.json().catch(function () { return {}; }); })
             .then(function (res) {
@@ -168,7 +193,7 @@
             })
             .catch(function () {
                 setSending(false);
-                errEl.textContent = 'Não foi possível enviar agora. Tente novamente em instantes.';
+                errEl.textContent = t('Não foi possível enviar agora. Tente novamente em instantes.');
                 errEl.hidden = false;
             });
     });

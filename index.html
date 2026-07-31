@@ -398,6 +398,11 @@
             </nav>
 
             <div class="header-actions">
+                <button class="lang-toggle" type="button" aria-label="Mudar idioma para inglês"
+                    title="Idioma: Português">
+                    <span class="lt-label lt-pt" aria-hidden="true">PT</span>
+                    <span class="lt-label lt-en" aria-hidden="true">EN</span>
+                </button>
                 <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Alternar tema claro e escuro"
                     title="Alternar tema">
                     <svg class="icon ic-sun" aria-hidden="true">
@@ -486,11 +491,6 @@
                                 aria-label="LeetCode">
                                 <svg class="icon">
                                     <use href="#si-leetcode"></use>
-                                </svg>
-                            </a>
-                            <a href="https://wa.me/5531972464431" target="_blank" rel="noopener" aria-label="WhatsApp">
-                                <svg class="icon">
-                                    <use href="#i-whatsapp"></use>
                                 </svg>
                             </a>
                         </div>
@@ -947,16 +947,6 @@
                     <!-- LINHA 1 · esquerda: texto + canais (mesma altura do formulário) -->
                     <div class="contact-info">
                         <div class="contact-channels">
-                            <a class="channel" draggable="false" href="https://wa.me/5531972464431" target="_blank"
-                                rel="noopener">
-                                <span class="ch-icon"><svg class="icon">
-                                        <use href="#i-whatsapp"></use>
-                                    </svg></span>
-                                <span>
-                                    <span class="ch-label">whatsapp</span><br>
-                                    <span class="ch-value">+55 31 97246-4431</span>
-                                </span>
-                            </a>
                             <a class="channel channel--loc" draggable="false"
                                 href="https://www.google.com/maps/search/?api=1&amp;query=Belo+Horizonte%2C+MG%2C+Brasil"
                                 target="_blank" rel="noopener" aria-label="Ver Belo Horizonte no Google Maps">
@@ -968,19 +958,22 @@
                                     <span class="ch-value">Belo Horizonte, MG</span>
                                 </span>
                             </a>
-                            <a class="channel" draggable="false"
-                                href="mailto:vitor04082@gmail.com"
-                                data-email="vitor04082@gmail.com">
+                            <!-- E-mail ofuscado: o endereço NÃO fica em texto no HTML
+                                 (bots varrem "mailto:" e padrões user@dominio). O JS
+                                 (email-links.js) decodifica o data-e64 (Base64), monta
+                                 o href e escreve o endereço visível no .ch-value. -->
+                            <a class="channel" draggable="false" href="#contato"
+                                data-e64="dml0b3IwNDA4MkBnbWFpbC5jb20=" aria-label="E-mail">
                                 <span class="ch-icon"><svg class="icon">
                                         <use href="#i-envelope"></use>
                                     </svg></span>
                                 <span>
                                     <span class="ch-label">e-mail</span><br>
-                                    <span class="ch-value">vitor04082@gmail.com</span>
+                                    <span class="ch-value" data-e64-text>use o formulário ao lado</span>
                                 </span>
                             </a>
                             <a class="channel" draggable="false" href="https://github.com/Vitor-LR" target="_blank"
-                                rel="noopener">
+                                rel="noopener" aria-label="GitHub">
                                 <span class="ch-icon"><svg class="icon">
                                         <use href="#i-github"></use>
                                     </svg></span>
@@ -990,7 +983,7 @@
                                 </span>
                             </a>
                             <a class="channel" draggable="false" href="https://www.linkedin.com/in/vitorlombard/"
-                                target="_blank" rel="noopener">
+                                target="_blank" rel="noopener" aria-label="LinkedIn">
                                 <span class="ch-icon"><svg class="icon">
                                         <use href="#i-linkedin"></use>
                                     </svg></span>
@@ -1022,7 +1015,10 @@
                          alguém enviar, chega um e-mail de confirmação (1x). No
                          sucesso, abre o popup de agradecimento (sem mudar de página).
                          ======================================================== -->
-                    <form class="contact-form" action="https://formsubmit.co/vitor04082@gmail.com" method="POST">
+                    <!-- A action é montada pelo JS (contact-form.js) usando o
+                         random string do FormSubmit — o e-mail de destino não
+                         aparece em lugar nenhum do código do formulário. -->
+                    <form class="contact-form" method="POST">
                         <div class="form-row">
                             <div class="form-field">
                                 <label for="nome">Nome</label>
@@ -1124,7 +1120,7 @@
 
                         <!-- Configurações do FormSubmit -->
                         <input type="hidden" name="_subject" value="Novo contato pelo portfólio">
-                        <input type="hidden" name="_captcha" value="false">
+                        <input type="hidden" name="_captcha" value="true">
                         <input type="hidden" name="_template" value="table">
                         <!-- Fallback sem JS: troque o domínio pela URL pública real. -->
                         <input type="hidden" name="_next" value="https://vitor-lr.github.io/Portifolio-cv/#contato">
@@ -1250,12 +1246,7 @@
                         <use href="#i-linkedin"></use>
                     </svg>
                 </a>
-                <a href="https://wa.me/5531972464431" target="_blank" rel="noopener" aria-label="WhatsApp">
-                    <svg class="icon">
-                        <use href="#i-whatsapp"></use>
-                    </svg>
-                </a>
-                <a href="mailto:vitor04082@gmail.com" data-email="vitor04082@gmail.com" aria-label="E-mail">
+                <a href="#contato" data-e64="dml0b3IwNDA4MkBnbWFpbC5jb20=" aria-label="E-mail">
                     <svg class="icon">
                         <use href="#i-envelope"></use>
                     </svg>
@@ -1268,6 +1259,7 @@
 
     </footer>
 
+    <script src="assets/js/i18n.js" defer></script>
     <script src="assets/js/particles.js" defer></script>
     <script src="assets/js/projects.js" defer></script>
     <script src="assets/js/main.js" defer></script>

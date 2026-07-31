@@ -26,7 +26,9 @@ portfolio-vitor/
 │   │   ├── github-langs.js   → linguagens mais usadas do GitHub (ao vivo)
 │   │   └── contact-form.js   → formulário (FormSubmit + popup de confirmação)
 │   ├── img/                → coloque aqui suas imagens (prints, banners, og)
-│   ├── cv/CV-Vitor-Rocha.pdf → currículo usado no botão "Baixar CV"
+│   ├── cv/CV-Vitor-Rocha.pdf    → currículo (PT) do botão "Baixar CV"
+│   ├── cv/CV-Vitor-Rocha-EN.pdf → currículo em inglês (baixado quando o
+│   │                              site está em EN — troca feita pelo i18n.js)
 │   ├── favicon.png
 │   └── apple-touch-icon.png
 ├── sitemap.xml
@@ -80,11 +82,18 @@ Usa o **FormSubmit** (https://formsubmit.co) — não precisa de servidor. Ao en
 abre um popup "não sou um robô" e, confirmando, a mensagem é enviada por AJAX e
 aparece um popup de agradecimento (sem trocar de página).
 
-Na primeira vez que alguém enviar, o FormSubmit manda um e-mail de confirmação
-para **vitor04082@gmail.com**. Basta confirmar uma vez.
+O formulário envia para o **random string** do FormSubmit (constante `KEY`
+no `contact-form.js`) — o e-mail de destino não existe no código do
+formulário. Para trocar o destino: ative o novo endereço (1º envio + link de
+confirmação) e substitua o `KEY` pelo novo string da página de confirmação.
+
+**O e-mail do card de contato não fica em texto no código**: está em Base64
+(atributo `data-e64` no HTML) e é decodificado pelo JS — coletores de spam
+que varrem o HTML não o encontram. Para trocar o endereço, rode
+`btoa('novo@email.com')` no console e substitua o valor.
 
 O card de e-mail (na seção de contato) abre a janela de composição do **Gmail**
-já endereçada a você.
+já endereçada a você (no celular, abre o app de e-mail nativo).
 
 ## O que trocar ANTES de publicar
 

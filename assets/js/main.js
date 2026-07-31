@@ -258,41 +258,82 @@
     }
 
     /* ========================================================
-       5. TERMINAL DO HERO — digitação linha a linha
-       As linhas ficam no array `lines` abaixo (conteúdo fixo); o
-       efeito "digita" cada uma. Pula a animação no prefers-reduced-motion.
+       5. TERMINAL DO HERO — digitação linha a linha (PT/EN)
+       As linhas ficam em LINES por idioma; o efeito "digita" cada
+       uma. Quando o idioma muda (evento i18n:change do i18n.js),
+       o terminal limpa e redigita no idioma novo — a própria
+       redigitação vira a animação da troca. Pula a animação no
+       prefers-reduced-motion.
        ======================================================== */
     const term = document.getElementById('terminal-out');
     if (term) {
-        // Linhas: cada uma é [classeCSS, texto]. O \n quebra linha.
-        const lines = [
-            ['term-comment', '// perfil do desenvolvedor'],
-            ['', ''],
-            ['term-prompt', '$ whoami'],
-            ['term-out', 'vitor lombard rocha'],
-            ['', ''],
-            ['term-prompt', '$ cat stack.json'],
-            ['term-key', '{'],
-            ['term-out', '  "foco": ['],
-            ['term-str', '    "backend", "dados", "infra"'],
-            ['term-out', '  ],'],
-            ['term-out', '  "linguagens": ['],
-            ['term-str', '    "Go", "Python", "JavaScript",'],
-            ['term-str', '    "Java", "C/C++", "SQL"'],
-            ['term-out', '  ],'],
-            ['term-out', '  "infra": ['],
-            ['term-str', '    "Docker", "CI/CD", "Cloud"'],
-            ['term-out', '  ]'],
-            ['term-key', '}'],
-            ['', ''],
-            ['term-prompt', '$ status --disponivel'],
-            ['term-str', '✓ aberto a novas oportunidades']
-        ];
+        // Linhas: cada uma é [classeCSS, texto].
+        const LINES = {
+            pt: [
+                ['term-comment', '// perfil do desenvolvedor'],
+                ['', ''],
+                ['term-prompt', '$ whoami'],
+                ['term-out', 'vitor lombard rocha'],
+                ['', ''],
+                ['term-prompt', '$ cat stack.json'],
+                ['term-key', '{'],
+                ['term-out', '  "foco": ['],
+                ['term-str', '    "backend", "dados", "infra"'],
+                ['term-out', '  ],'],
+                ['term-out', '  "linguagens": ['],
+                ['term-str', '    "Go", "Python", "JavaScript",'],
+                ['term-str', '    "Java", "C/C++", "SQL"'],
+                ['term-out', '  ],'],
+                ['term-out', '  "infra": ['],
+                ['term-str', '    "Docker", "CI/CD", "Cloud"'],
+                ['term-out', '  ]'],
+                ['term-key', '}'],
+                ['', ''],
+                ['term-prompt', '$ status --disponivel'],
+                ['term-str', '\u2713 aberto a novas oportunidades']
+            ],
+            en: [
+                ['term-comment', '// developer profile'],
+                ['', ''],
+                ['term-prompt', '$ whoami'],
+                ['term-out', 'vitor lombard rocha'],
+                ['', ''],
+                ['term-prompt', '$ cat stack.json'],
+                ['term-key', '{'],
+                ['term-out', '  "focus": ['],
+                ['term-str', '    "backend", "data", "infra"'],
+                ['term-out', '  ],'],
+                ['term-out', '  "languages": ['],
+                ['term-str', '    "Go", "Python", "JavaScript",'],
+                ['term-str', '    "Java", "C/C++", "SQL"'],
+                ['term-out', '  ],'],
+                ['term-out', '  "infra": ['],
+                ['term-str', '    "Docker", "CI/CD", "Cloud"'],
+                ['term-out', '  ]'],
+                ['term-key', '}'],
+                ['', ''],
+                ['term-prompt', '$ status --available'],
+                ['term-str', '\u2713 open to new opportunities']
+            ]
+        };
 
-        // Monta tudo de uma vez. Usa textContent (igual à digitação) — sem
-        // innerHTML — para tratar o conteúdo sempre como texto, de forma
-        // consistente. Linha vazia recebe um espaço não-quebrável.
-        function renderAll() {
+        function currentLines() {
+            return (window.I18N && window.I18N.lang === 'en') ? LINES.en : LINES.pt;
+        }
+
+        // Token de execução: cada início de digitação invalida a
+        // anterior (troca de idioma no meio da animação, por exemplo).
+        let runToken = 0;
+        let currentFinish = null;   // "completa já" da execução ativa
+        let visibleOnce = false;    // já entrou na tela alguma vez?
+
+        function appendCursor() {
+            const cur = document.createElement('span');
+            cur.className = 'term-cursor';
+            term.appendChild(cur);
+        }
+
+        function renderAll(lines) {
             term.innerHTML = '';
             const frag = document.createDocumentFragment();
             lines.forEach(([cls, txt]) => {
@@ -304,32 +345,33 @@
             term.appendChild(frag);
         }
 
-        if (prefersReduced) {
-            renderAll();
-        } else {
-            let li = 0;
-            let finished = false;
-            term.innerHTML = '';
+        function start(instant) {
+            runToken++;
+            const my = runToken;
+            const lines = currentLines();
 
-            function appendCursor() {
-                const cur = document.createElement('span');
-                cur.className = 'term-cursor';
-                term.appendChild(cur);
+            if (prefersReduced || instant) {
+                renderAll(lines);
+                appendCursor();
+                currentFinish = null;
+                return;
             }
 
-            // Rede de segurança: se a digitação for interrompida (aba ou
-            // painel de preview que pausa os timers em segundo plano),
-            // completa o terminal de uma vez — evita ele ficar "cortado".
+            term.innerHTML = '';
+            let li = 0;
+            let done = false;
+
             function finishNow() {
-                if (finished) return;
-                finished = true;
-                renderAll();
+                if (my !== runToken || done) return;
+                done = true;
+                renderAll(lines);
                 appendCursor();
             }
+            currentFinish = finishNow;
 
             function typeLine() {
-                if (finished) return;
-                if (li >= lines.length) { appendCursor(); return; }
+                if (my !== runToken || done) return;
+                if (li >= lines.length) { done = true; appendCursor(); return; }
 
                 const [cls, txt] = lines[li];
                 const div = document.createElement('div');
@@ -340,7 +382,7 @@
 
                 let ci = 0;
                 (function typeChar() {
-                    if (finished) return;
+                    if (my !== runToken || done) return;
                     div.textContent = txt.slice(0, ci);
                     ci++;
                     if (ci <= txt.length) {
@@ -352,34 +394,39 @@
                 })();
             }
 
-            // Ao voltar a ficar visível (troca de aba), garante o terminal completo.
-            document.addEventListener('visibilitychange', function () {
-                if (document.visibilityState === 'visible') finishNow();
-            });
-
-            // Começa a digitar só quando o terminal aparece na tela; se o usuário
-            // rolar para fora antes de terminar, completa na hora. Assim o terminal
-            // não fica "crescendo" enquanto ele lê outra seção (no mobile isso fazia
-            // o conteúdo de baixo ficar descendo até a animação acabar).
-            let started = false;
-            function startTyping() {
-                if (started || finished) return;
-                started = true;
-                setTimeout(typeLine, 250);
-            }
-
-            if ('IntersectionObserver' in window) {
-                const termObs = new IntersectionObserver(function (entries) {
-                    entries.forEach(function (e) {
-                        if (e.isIntersecting) startTyping();
-                        else if (started) finishNow();   // saiu da tela → completa já
-                    });
-                });
-                termObs.observe(term);
-            } else {
-                setTimeout(startTyping, 600);   // fallback sem observer
-            }
+            setTimeout(typeLine, 250);
         }
+
+        // Ao voltar a ficar visível (troca de aba), garante o terminal completo.
+        document.addEventListener('visibilitychange', function () {
+            if (document.visibilityState === 'visible' && currentFinish) currentFinish();
+        });
+
+        // Começa a digitar só quando o terminal aparece na tela; se o usuário
+        // rolar para fora antes de terminar, completa na hora. Assim o terminal
+        // não fica "crescendo" enquanto ele lê outra seção.
+        if ('IntersectionObserver' in window) {
+            const termObs = new IntersectionObserver(function (entries) {
+                entries.forEach(function (e) {
+                    if (e.isIntersecting) {
+                        if (!visibleOnce) { visibleOnce = true; start(false); }
+                    } else if (visibleOnce && currentFinish) {
+                        currentFinish();   // saiu da tela → completa já
+                    }
+                });
+            });
+            termObs.observe(term);
+        } else {
+            visibleOnce = true;
+            setTimeout(function () { start(false); }, 600);
+        }
+
+        // Troca de idioma: redigita no idioma novo. Se o terminal
+        // ainda nem apareceu, só espera — o começo já usará o idioma
+        // certo via currentLines().
+        document.addEventListener('i18n:change', function () {
+            if (visibleOnce) start(false);
+        });
     }
 
     /* ========================================================

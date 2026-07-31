@@ -484,6 +484,82 @@ body::before {
 }
 
 /* ----- Botão de tema (claro/escuro) ------------------------- */
+/* ============================================================
+   BOTÃO DE IDIOMA — mostra só o idioma ATUAL (PT ⇄ EN).
+   Minimalista, sem caixa: as duas siglas ficam empilhadas na
+   mesma célula (padrão do sol/lua do tema); a ativa é visível e,
+   na troca, uma rola para cima enquanto a outra entra por baixo,
+   com a mesma mola dos ícones do tema. Estado EN = classe .is-en
+   (aplicada pelo i18n.js).
+   ============================================================ */
+.lang-toggle {
+    display: inline-grid;
+    place-items: center;
+    position: relative;
+    overflow: hidden;                      /* esconde a sigla que rola p/ fora */
+    width: 2rem;
+    height: 2rem;                          /* quadrado: o hover fica 1:1 (o
+                                              flex do header centraliza na
+                                              altura do botão de tema) */
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0.4rem;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background-color 0.25s ease;
+}
+
+/* hover/foco acendem só a sigla (o botão TEM o tamanho da sigla) */
+.lang-toggle:hover,
+.lang-toggle:focus-visible {
+    background: var(--accent-soft);
+}
+.lang-toggle:hover .lt-label,
+.lang-toggle:focus-visible .lt-label {
+    color: var(--accent);
+}
+
+.lang-toggle .lt-label {
+    grid-area: 1 / 1;                      /* empilhadas na mesma célula */
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--text);
+    pointer-events: none;
+    user-select: none;
+    transition:
+        opacity 0.3s ease,
+        transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);  /* mesma mola do tema */
+}
+
+/* PT visível por padrão; EN esperando embaixo */
+.lang-toggle .lt-pt { opacity: 1; transform: translateY(0); }
+.lang-toggle .lt-en { opacity: 0; transform: translateY(0.9rem); }
+
+/* em inglês: PT rola para cima e some; EN assume o lugar */
+.lang-toggle.is-en .lt-pt { opacity: 0; transform: translateY(-0.9rem); }
+.lang-toggle.is-en .lt-en { opacity: 1; transform: translateY(0); }
+
+/* ============================================================
+   TROCA DE IDIOMA — a página "recarrega" com a mesma animação
+   de entrada (fadeUp). O i18n.js aplica .i18n-out no <html>,
+   troca os textos e então .i18n-in, que roda o fadeUp de novo
+   no conteúdo (header fica parado — o clique não pula).
+   ============================================================ */
+.i18n-out main,
+.i18n-out footer {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.i18n-in main,
+.i18n-in footer {
+    animation: fadeUp 0.6s ease both;
+}
+
 .theme-toggle {
     display: inline-grid;
     place-items: center;
@@ -575,6 +651,15 @@ body::before {
 
 /* acessibilidade: quem pediu menos movimento recebe só um fade curto */
 @media (prefers-reduced-motion: reduce) {
+    /* idioma: a sigla troca com um fade curto, sem rolagem;
+       a troca de página vira corte seco */
+    .lang-toggle .lt-label {
+        transition: opacity 0.15s linear;
+        transform: none !important;
+    }
+    .i18n-out main, .i18n-out footer { transition: none; }
+    .i18n-in main, .i18n-in footer { animation: none; }
+
     .theme-toggle .icon {
         transition: opacity 0.15s linear;
         transform: none !important;
@@ -1881,7 +1966,10 @@ body::before {
 /* o formulário cresce para acompanhar a altura do bloco texto+canais */
 .contact-form { display: flex; flex-direction: column; }
 .contact-form .form-field--msg { flex: 1; display: flex; flex-direction: column; }
-.contact-form .form-field--msg textarea { flex: 1; min-height: 8rem; }
+/* min-height menor: com um card a menos na coluna da esquerda
+   (WhatsApp removido), a textarea encolhe junto e as duas colunas
+   continuam com a mesma altura (o flex:1 cuida do resto). */
+.contact-form .form-field--msg textarea { flex: 1; min-height: 5rem; }
 
 /* Botão "Enviar mensagem": largura do conteúdo (não ocupa a linha toda)
    e alinhado à esquerda — sobrescreve o width:100% do .btn--block. */
@@ -1924,7 +2012,7 @@ body::before {
 
 .channel:hover {
     border-color: var(--accent-line);
-    transform: translateX(3px);
+    transform: translateY(-3px);
     background: var(--accent-soft);
 }
 
@@ -3241,23 +3329,26 @@ html { scrollbar-color: var(--scrollbar-thumb) var(--bg); }
 }
 
 /* ============================================================
-   "Vamos conversar" no mobile: cards de canal em grade 2×2,
-   mostrando só ícone + nome (sem os dados). O card de localização
-   é escondido (sobram 4 canais → 2×2 perfeito). Desktop intocado.
+   "Vamos conversar" no mobile: cards de canal minimalistas —
+   só o ícone, sem texto, em 1 linha de 3 acima do formulário.
+   O card de localização é escondido. Desktop intocado.
    ============================================================ */
 @media (max-width: 600px) {
-    .contact-channels { grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+    .contact-channels { grid-template-columns: repeat(3, 1fr); gap: 0.6rem; }
     .channel--loc { display: none; }                  /* esconde localização no mobile */
     .channel {
-        justify-content: flex-start;                  /* ícones e nomes alinhados entre os cards */
-        gap: 0.65rem;
-        padding: 0.9rem 0.95rem;
+        justify-content: center;                      /* só o ícone, centralizado */
+        gap: 0;
+        padding: 0.7rem;
+    }
+    .channel .ch-icon {                               /* ícone "solto": sem a caixinha */
+        width: auto;
+        height: auto;
+        background: none;
+        border-radius: 0;
+        font-size: 1.25rem;
     }
     .channel br,
-    .channel .ch-value { display: none; }             /* tira os dados (e a quebra de linha) */
-    .channel .ch-label {                              /* nome vira o texto principal do card */
-        font-size: 0.9rem;
-        color: var(--text);
-        font-weight: 500;
-    }
+    .channel .ch-value,
+    .channel .ch-label { display: none; }             /* sem textos: o card é o ícone */
 }
