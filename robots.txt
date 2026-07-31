@@ -4,4 +4,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://vitor-lr.github.io/Portifolio-cv/sitemap.xml
+Sitemap: https://vitor-lr.github.io/portifolio-vitor/sitemap.xml

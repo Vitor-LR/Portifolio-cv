@@ -78,7 +78,7 @@
         'Além da parte técnica, possuo experiência com atendimento ao público e rotinas administrativas, o que fortaleceu minha capacidade de comunicação, autonomia e responsabilidade no trabalho.':
             'Beyond the technical side, I have experience with customer service and administrative routines, which strengthened my communication skills, autonomy and sense of responsibility at work.',
         '// em números': '// in numbers',
-        'anos de experiência': 'years of experience',
+        'anos programando': 'years programming',
         'projetos realizados': 'projects built',
         'nível de inglês': 'English level',
         'certificações': 'certifications',
@@ -139,7 +139,7 @@
         'Web Developer · CRM & IA': 'Web Developer · CRM & AI',
         'ShopCouture · meio período': 'ShopCouture · part-time',
         'Desenvolvimento e personalização de sites e lojas virtuais': 'Development and customization of websites and online stores',
-        'Aplicação de IA generativa aplicados ao desenvolvimento web': 'Generative AI applied to web development',
+        'Aplicação de IA generativa aplicada ao desenvolvimento web': 'Generative AI applied to web development',
         'CRM e ferramentas de gestão (ClickUp, Full Funnel e Trello)': 'CRM and management tools (ClickUp, Full Funnel and Trello)',
         'Análise e gerenciamento de dados com Excel e Google Sheets': 'Data analysis and management with Excel and Google Sheets',
         'Gestão de campanhas de tráfego pago no Meta Ads Manager (Facebook e Instagram)': 'Paid-traffic campaign management in Meta Ads Manager (Facebook and Instagram)',
@@ -320,7 +320,7 @@
         'Rastreador e análise de hábitos: React/Next.js com heatmaps, streaks, metas, finanças e temporizador, servido por uma API em Go sem dependências.': 'Habit tracker and analytics: React/Next.js with heatmaps, streaks, goals, finances and a focus timer, backed by a dependency-free Go API.',
 
         /* ---------- luizalombard.com.br ---------- */
-        '// projeto · site em produção': '// project · production website',
+        '// projeto · site institucional': '// project · institutional website',
         'Projeto para cliente real, do código à publicação: site de advocacia rápido, acessível e em conformidade com a LGPD, servido pelo GitHub Pages com domínio próprio.': 'A real-client project, from code to launch: a fast, accessible, LGPD-compliant law-firm website served by GitHub Pages on its own domain.',
         'Site institucional de uma advogada, no ar em luizalombard.com.br. Todo o front é HTML, CSS e JavaScript puros — sem frameworks — com tema claro/escuro sem flash de carregamento, fontes auto-hospedadas e atenção a performance e acessibilidade.': 'The institutional website of a lawyer, live at luizalombard.com.br. The whole front end is plain HTML, CSS and JavaScript — no frameworks — with a flash-free light/dark theme, self-hosted fonts and care for performance and accessibility.',
         'Um site profissional de verdade precisa de mais do que aparência: precisa carregar rápido em celular, ser encontrado no Google, tratar dados de visitantes conforme a LGPD e custar pouco para manter. E, sendo para cliente real, precisa ficar no ar de forma confiável.': 'A real professional website needs more than looks: it must load fast on mobile, be found on Google, handle visitor data under LGPD and stay cheap to maintain. And, being for a real client, it must stay reliably online.',
@@ -422,7 +422,7 @@
         'Identidade visual própria, sem frameworks de CSS': 'Its own visual identity, no CSS frameworks',
         'No servidor, o Flask renderiza o template com o resultado calculado a partir do dicionário de fatores; o Dockerfile congela o ambiente e a imagem sobe em qualquer host com um docker run. A demo do Pages replica a mesma tabela de fatores no cliente — dois ambientes, uma só regra de negócio.': 'On the server, Flask renders the template with the result computed from the factor dictionary; the Dockerfile freezes the environment and the image runs on any host with a single docker run. The Pages demo mirrors the same factor table on the client — two environments, one business rule.',
         'O código original repetia a mesma conta em ramos quase idênticos — cada unidade nova exigiria mais um bloco copiado. A refatoração concentrou tudo num dicionário único de fatores de conversão, e adicionar unidade virou adicionar uma linha. O outro desafio foi a formatação: exibir float em padrão brasileiro exigiu cuidar da vírgula decimal e dos resíduos de ponto flutuante, e aceitar entrada com vírgula sem quebrar a conversão. Completam a lista a validação com mensagem clara em vez de erro genérico e o formulário que preserva a seleção do usuário após o envio.': 'The original code repeated the same arithmetic across nearly identical branches — every new unit would demand another copied block. The refactor concentrated everything in a single dictionary of conversion factors, and adding a unit became adding a line. The other challenge was formatting: displaying floats the Brazilian way meant handling the decimal comma and floating-point residue, and accepting comma-typed input without breaking the conversion. Rounding out the list are validation with a clear message instead of a generic error, and a form that preserves the user\'s selection after submission.',
-        'Aplicação, imagem Docker e demo estática': 'Application, Docker image and static demo',
+        'Aplicação, imagem Docker e cálculo': 'Application, Docker image and math',
         'Banner do projeto Conversor de Distância': 'Distance Converter project banner',
         'Conversor com resultado calculado': 'Converter with a computed result',
         'Demo estática no GitHub Pages': 'Static demo on GitHub Pages',
