@@ -32,77 +32,100 @@
 window.PROJETOS = [
 
     {
-        titulo: 'GoTask API',
-        categoria: 'API · Backend',
-        glyph: '{ } GoTask API',
-        descricao: 'API REST de gerenciamento de tarefas em Go, com autenticação JWT, PostgreSQL e deploy containerizado.',
-        tags: ['Go', 'PostgreSQL', 'JWT', 'Docker'],
-        pagina: 'projetos/gotask-api.html',
-        imagem: 'assets/img/gotask/banner.png',
-        codigo: 'https://github.com/',
-        demo: '#'
+        titulo: 'Fake Shop',
+        categoria: 'DevOps · Kubernetes',
+        glyph: '⎈ Fake Shop',
+        descricao: 'E-commerce Flask + PostgreSQL usado como laboratório DevOps: CI/CD no GitHub Actions, imagem no Docker Hub e deploy no Kubernetes com 10 réplicas.',
+        tags: ['Kubernetes', 'Docker', 'GitHub Actions', 'PostgreSQL'],
+        pagina: 'projetos/fake-shop.html',
+        imagem: 'assets/img/fake-shop/banner.png',
+        codigo: 'https://github.com/Vitor-LR/Fake-Shop',
+        demo: 'https://vitor-lr.github.io/Fake-Shop/'
     },
 
     {
-        titulo: 'ObservaStack',
-        categoria: 'Observabilidade',
-        glyph: '▦ ObservaStack',
-        descricao: 'Stack de monitoramento com métricas expostas em Go, coletadas via Prometheus e visualizadas em dashboards Grafana.',
-        tags: ['Go', 'Prometheus', 'Grafana', 'Docker'],
-        pagina: 'projetos/observastack.html',
-        imagem: 'assets/img/observastack/banner.png',
-        codigo: 'https://github.com/',
-        demo: '#'
+        titulo: 'DevBook',
+        categoria: 'Fullstack · Go',
+        glyph: '</> DevBook',
+        descricao: 'Rede social para devs no estilo Twitter/X, 100% em Go: API REST com JWT, bcrypt e MySQL + webapp com templates server-side e cookies criptografados.',
+        tags: ['Go', 'MySQL', 'JWT', 'Docker'],
+        pagina: 'projetos/devbook.html',
+        imagem: 'assets/img/devbook/banner.png',
+        codigo: 'https://github.com/Vitor-LR/DevBook',
+        demo: 'https://vitor-lr.github.io/DevBook/'
     },
 
     {
-        titulo: 'DataMart SQL',
-        categoria: 'Dados · Análise',
-        glyph: '⊞ DataMart SQL',
-        descricao: 'Pipeline de ingestão e análise de dados em Python e SQL, com consultas otimizadas e relatórios sobre PostgreSQL.',
-        tags: ['Python', 'SQL', 'PostgreSQL', 'Pandas'],
-        pagina: 'projetos/datamart-sql.html',
-        imagem: 'assets/img/datamart/banner.png',
-        codigo: 'https://github.com/',
-        demo: '#'
+        titulo: 'pulso.app',
+        categoria: 'Fullstack · Produtividade',
+        glyph: '∿ pulso.app',
+        descricao: 'Rastreador e análise de hábitos: React/Next.js com heatmaps, streaks, metas, finanças e temporizador, servido por uma API em Go sem dependências.',
+        tags: ['React', 'Next.js', 'Go', 'Tailwind'],
+        pagina: 'projetos/pulso-app.html',
+        imagem: 'assets/img/pulso-app/banner.png',
+        codigo: 'https://github.com/Vitor-LR/Habit-Tracker',
+        demo: 'https://vitor-lr.github.io/Habit-Tracker/'
     },
 
     {
-        titulo: 'Sites para marcas parceiras',
-        categoria: 'Web · Sites',
-        glyph: '</> Sites de marcas',
-        descricao: 'Criação e implementação de sites responsivos para marcas parceiras, com foco em performance e SEO.',
+        titulo: 'luizalombard.com.br',
+        categoria: 'Site · Landing Page',
+        glyph: '§ luizalombard',
+        descricao: 'Site profissional de advocacia no ar com domínio próprio: vanilla JS, tema claro/escuro, SEO com dados estruturados e conformidade com a LGPD.',
         tags: ['HTML', 'CSS', 'JavaScript', 'SEO'],
-        pagina: 'projetos/sites-marcas.html',
-        imagem: 'assets/img/sites/banner.png',
-        codigo: 'https://github.com/',
-        demo: '#'
+        pagina: 'projetos/luizalombard.html',
+        imagem: 'assets/img/luizalombard/banner.png',
+        codigo: 'https://github.com/Vitor-LR/portifolio-luiza',
+        demo: 'https://luizalombard.com.br/'
     },
 
     {
-        titulo: 'URLShort',
-        categoria: 'API · Backend',
-        glyph: '⇄ URLShort',
-        descricao: 'API encurtadora de URLs em Go, com cache em Redis, PostgreSQL e redirecionamento de baixa latência.',
-        tags: ['Go', 'Redis', 'PostgreSQL', 'Docker'],
-        pagina: 'projetos/urlshort.html',
-        imagem: 'assets/img/urlshort/banner.png',
-        codigo: 'https://github.com/',
-        demo: '#'
+        titulo: 'Calculadora em C',
+        categoria: 'C · WebAssembly',
+        glyph: '± calculadora.c',
+        descricao: 'Calculadora com motor 100% em C freestanding compilado para WebAssembly: máquina de estados, porcentagem contextual e formatação pt-BR, em 12 KB.',
+        tags: ['C', 'WebAssembly', 'Clang', 'Make'],
+        pagina: 'projetos/calculadora-c.html',
+        imagem: 'assets/img/calculadora-c/banner.png',
+        codigo: 'https://github.com/Vitor-LR/calculadora-c',
+        demo: 'https://vitor-lr.github.io/calculadora-c/'
     },
 
-    // ⬇️ Novos projetos entram aqui. Os que ficarem após o 4º
-    //    aparecem APENAS na página "todos os projetos".
-    // ,{
-    //     titulo: 'Meu Novo Projeto',
-    //     categoria: 'Categoria',
-    //     glyph: '★ Meu Novo Projeto',
-    //     descricao: 'Descrição curta do projeto.',
-    //     tags: ['Tag1', 'Tag2'],
-    //     pagina: 'projetos/meu-novo-projeto.html',
-    //     codigo: 'https://github.com/seu-usuario/repo',
-    //     demo: '#'
-    // }
+    {
+        titulo: 'LinkQ',
+        categoria: 'Go · WebAssembly',
+        glyph: '⇢ LinkQ',
+        descricao: 'Encurtador de URL com gerador de QR Code escrito em Go e compilado para WebAssembly — toda a lógica roda no navegador, publicado no GitHub Pages.',
+        tags: ['Go', 'WebAssembly', 'QR Code'],
+        pagina: 'projetos/linkq.html',
+        imagem: 'assets/img/linkq/banner.png',
+        codigo: 'https://github.com/Vitor-LR/LinkQ',
+        demo: 'https://vitor-lr.github.io/LinkQ/'
+    },
+
+    {
+        titulo: 'DevBurguer',
+        categoria: 'Web · Node.js',
+        glyph: '≡ DevBurguer',
+        descricao: 'Site de hamburgueria com servidor Node/Express: cardápio dinâmico lido de JSON, rota de API, formulário de contato e páginas de resposta estilizadas.',
+        tags: ['Node.js', 'Express', 'JavaScript', 'CSS'],
+        pagina: 'projetos/devburguer.html',
+        imagem: 'assets/img/devburguer/banner.png',
+        codigo: 'https://github.com/Vitor-LR/DevBurguer',
+        demo: 'https://vitor-lr.github.io/DevBurguer/'
+    },
+
+    {
+        titulo: 'Conversor de Distância',
+        categoria: 'Python · Docker',
+        glyph: '⇄ conversor',
+        descricao: 'Conversor de unidades em Flask com formatação pt-BR, empacotado como imagem Docker pública e com demo funcional em JavaScript no GitHub Pages.',
+        tags: ['Python', 'Flask', 'Docker', 'JavaScript'],
+        pagina: 'projetos/conversor-distancia.html',
+        imagem: 'assets/img/conversor-distancia/banner.png',
+        codigo: 'https://github.com/Vitor-LR/ConversorDistancia',
+        demo: 'https://vitor-lr.github.io/ConversorDistancia/'
+    }
 
 ];
 

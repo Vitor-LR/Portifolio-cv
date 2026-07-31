@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0A0F1E">
+    <script>(function(){try{if(localStorage.getItem('theme')==='light'){document.documentElement.setAttribute('data-theme','light');}}catch(e){}})();</script>
+    <meta name="description"
+        content="Estudo de caso: Fake Shop — E-commerce Flask + PostgreSQL como laboratório DevOps: CI/CD, Docker Hub e Kubernetes com 10 réplicas.">
+
+    <!-- Open Graph (preview ao compartilhar) -->
+    <meta property="og:title" content="Fake Shop — Estudo de caso · Vitor Lombard Rocha">
+    <meta property="og:description" content="E-commerce Flask + PostgreSQL como laboratório DevOps: CI/CD, Docker Hub e Kubernetes com 10 réplicas.">
+    <meta property="og:type" content="article">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:url" content="https://vitor-lr.github.io/Portifolio-cv/projetos/fake-shop.html">
+    <meta property="og:image" content="https://vitor-lr.github.io/Portifolio-cv/assets/img/og.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Vitor Lombard Rocha — Portfólio">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <title>Fake Shop — Estudo de caso · Vitor Lombard Rocha</title>
+
+    <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+    <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+    <!-- TROCAR o domínio ao publicar -->
+    <link rel="canonical" href="https://vitor-lr.github.io/Portifolio-cv/projetos/fake-shop.html">
+
+    <!-- Fontes auto-hospedadas: preload só dos pesos críticos da dobra -->
+    <link rel="preload" href="../assets/fonts/space-grotesk-600.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="../assets/fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="../assets/fonts/jetbrains-mono-600.woff2" as="font" type="font/woff2" crossorigin>
+
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body>
+
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+        <symbol id="i-list" viewBox="0 0 16 16"><path fill="currentColor" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/></symbol>
+        <symbol id="i-sun" viewBox="0 0 16 16"><path fill="currentColor" d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6m0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8M8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0m0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13m8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5M3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8m10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0m-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0m9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707M4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708"/></symbol>
+        <symbol id="i-moon" viewBox="0 0 16 16"><path fill="currentColor" d="M6 .278a.77.77 0 0 1 .08.858 7.2 7.2 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277q.792-.001 1.533-.16a.79.79 0 0 1 .81.316.73.73 0 0 1-.031.893A8.35 8.35 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.75.75 0 0 1 6 .278M4.858 1.311A7.27 7.27 0 0 0 1.025 7.71c0 4.02 3.279 7.276 7.319 7.276a7.32 7.32 0 0 0 5.205-2.162q-.506.063-1.029.063c-4.61 0-8.343-3.714-8.343-8.29 0-1.167.242-2.278.681-3.286"/><path fill="currentColor" d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.73 1.73 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.73 1.73 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.73 1.73 0 0 0 1.097-1.097zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.16 1.16 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.16 1.16 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732z"/></symbol>
+        <symbol id="i-x" viewBox="0 0 16 16"><path fill="currentColor" d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/></symbol>
+        <symbol id="i-github" viewBox="0 0 16 16"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"/></symbol>
+        <symbol id="i-arrow-up-right" viewBox="0 0 16 16"><path fill="currentColor" fill-rule="evenodd" d="M14 2.5a.5.5 0 0 0-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z"/></symbol>
+        <symbol id="i-arrow-left" viewBox="0 0 16 16"><path fill="currentColor" fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/></symbol>
+    </svg>
+
+    <canvas id="bg-canvas" aria-hidden="true"></canvas>
+
+    <!-- HEADER simplificado das páginas de projeto -->
+    <header class="header">
+        <div class="container">
+            <a href="../index.html#hero" class="logo-link" aria-label="Ir para o início">
+                <span class="logo-mark">V</span>
+                <span>vitor<span class="logo-dim">.rocha</span></span>
+            </a>
+            <nav class="nav" id="navbar" aria-label="Navegação principal">
+                <a href="../index.html#sobre"><span class="nav-index">01.</span>Sobre</a>
+                <a href="../index.html#tecnologias"><span class="nav-index">02.</span>Stack</a>
+                <a href="../index.html#projetos"><span class="nav-index">03.</span>Projetos</a>
+                <a href="../index.html#trajetoria"><span class="nav-index">04.</span>Trajetória</a>
+                <a href="../index.html#contato"><span class="nav-index">05.</span>Contato</a>
+            </nav>
+            <div class="header-actions">
+                <button class="lang-toggle" type="button" aria-label="Mudar idioma para inglês"
+                    title="Idioma: Português">
+                    <span class="lt-label lt-pt" aria-hidden="true">PT</span>
+                    <span class="lt-label lt-en" aria-hidden="true">EN</span>
+                </button>
+                <button class="theme-toggle" id="theme-toggle" type="button"
+                    aria-label="Alternar tema claro e escuro" title="Alternar tema">
+                    <svg class="icon ic-sun" aria-hidden="true"><use href="#i-sun"></use></svg>
+                    <svg class="icon ic-moon" aria-hidden="true"><use href="#i-moon"></use></svg>
+                </button>
+                <a href="../todos-projetos.html" class="btn btn--ghost btn--sm">
+                    <svg class="icon"><use href="#i-arrow-left"></use></svg>
+                    <span>Projetos</span>
+                </a>
+                <button class="menu-toggle" id="menu-icon" aria-label="Abrir menu" aria-expanded="false" aria-controls="navbar">
+                    <span class="mt-bars" aria-hidden="true"><span></span><span></span><span></span></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- HERO DO CASE -->
+        <section class="case-hero">
+            <div class="container">
+                <a href="../todos-projetos.html" class="back-link">
+                    <span class="back-bubble"><svg class="icon"><use href="#i-arrow-left"></use></svg></span> <span class="back-label">todos os projetos</span>
+                </a>
+
+                <span class="eyebrow">// projeto · devops</span>
+                <h1>Fake Shop</h1>
+                <p class="case-sub">
+                    Loja virtual completa em Python levada do código à produção: pipeline de CI/CD no GitHub Actions, imagem publicada no Docker Hub e cluster Kubernetes rodando 10 réplicas atrás de um LoadBalancer.
+                </p>
+
+                <div class="case-actions">
+                    <a href="https://vitor-lr.github.io/Fake-Shop/" target="_blank" rel="noopener" class="btn btn--primary">
+                        <svg class="icon"><use href="#i-arrow-up-right"></use></svg> Ver projeto
+                    </a>
+                    <a href="https://github.com/Vitor-LR/Fake-Shop" target="_blank" rel="noopener" class="btn btn--ghost">
+                        <svg class="icon"><use href="#i-github"></use></svg> Ver código
+                    </a>
+                </div>
+
+                <div class="case-banner">
+                    <!-- TROCAR: substitua os arquivos em assets/img/fake-shop/ pelas capturas reais -->
+                    <img src="../assets/img/fake-shop/banner.png" alt="Banner do projeto Fake Shop">
+                </div>
+            </div>
+        </section>
+
+        <!-- CORPO DO CASE -->
+        <section class="section" style="padding-top: clamp(2.5rem, 5vw, 4rem);">
+            <div class="container">
+                <div class="case-layout">
+                    <article class="case-content">
+                        <h2>Visão geral</h2>
+                        <p>
+                            O Fake Shop é um e-commerce em Flask com catálogo, carrinho persistido por cookie e checkout, gravando em PostgreSQL via SQLAlchemy. Mas a aplicação é o meio, não o fim: o projeto existe para exercitar o ciclo completo de entrega — build, ship, run — com as mesmas ferramentas usadas em produção.
+                        </p>
+
+                        <h2>O problema</h2>
+                        <p>
+                            Colocar uma aplicação real para rodar de forma reprodutível é um problema diferente de escrevê-la: a imagem precisa ser imutável, as migrações do banco precisam acontecer sozinhas, as réplicas precisam dividir o mesmo estado e cada push deveria gerar uma versão publicável sem passo manual.
+                        </p>
+
+                        <h2>A solução</h2>
+                        <p>
+                            A aplicação foi containerizada com as migrações Alembic aplicadas automaticamente no entrypoint, antes do Gunicorn subir. O workflow do GitHub Actions constrói a imagem a cada push e publica no Docker Hub com duas tags: uma versionada pelo número da execução e a latest. Os manifestos Kubernetes sobem o PostgreSQL com Service ClusterIP e a loja com 10 réplicas expostas por LoadBalancer; o job de CD aplica os manifestos no cluster a partir de um kubeconfig em secret, hoje por acionamento manual. A aplicação ainda expõe métricas Prometheus em /metrics, em modo multiprocesso.
+                        </p>
+
+                        <h2>Funcionalidades</h2>
+                        <ul>
+                            <li>Catálogo, detalhe de produto, carrinho por cookie e checkout</li>
+                            <li>Migrações de banco automáticas no entrypoint do container</li>
+                            <li>CI que publica imagem com tag versionada + latest a cada push</li>
+                            <li>Deploy no Kubernetes com 10 réplicas e rollout sem downtime</li>
+                            <li>Métricas Prometheus expostas em /metrics</li>
+                            <li>Página de arquitetura publicada no GitHub Pages</li>
+                        </ul>
+
+                        <h2>Arquitetura</h2>
+                        <p>
+                            O fluxo é push → GitHub Actions → Docker Hub → cluster. No cluster, todas as réplicas da loja compartilham o mesmo PostgreSQL, resolvido por DNS interno pelo nome do Service — qualquer réplica atende qualquer visitante. Atualizar é trocar a imagem e deixar o rollout substituir os pods em ondas, sem tirar a loja do ar.
+                        </p>
+
+                        <h2>Screenshots</h2>
+                        <div class="gallery">
+                            <figure><img src="../assets/img/fake-shop/shot1.png" alt="Vitrine da loja com os produtos" loading="lazy"></figure>
+                            <figure><img src="../assets/img/fake-shop/shot2.png" alt="Pipeline verde no GitHub Actions" loading="lazy"></figure>
+                            <figure><img src="../assets/img/fake-shop/shot3.png" alt="Réplicas rodando no Kubernetes" loading="lazy"></figure>
+                            <figure><img src="../assets/img/fake-shop/shot4.png" alt="Página de arquitetura no GitHub Pages" loading="lazy"></figure>
+                        </div>
+
+                        <h2>Desafios &amp; aprendizados</h2>
+                        <p>
+                            O maior aprendizado veio de depurar o ciclo na prática: entender que uma imagem é imutável e que a tag latest pode ficar em cache no nó, quando usar rollout restart e quando cravar uma tag numerada, e como provar em qual elo — disco, GitHub, registry, cluster ou navegador — uma mudança se perdeu. É o tipo de intuição que só o erro real constrói.
+                        </p>
+                    </article>
+
+                    <!-- SIDEBAR -->
+                    <aside class="case-aside">
+                        <h3>// detalhes</h3>
+                        <div class="meta-block">
+                            <p class="meta-label">categoria</p>
+                            <p class="meta-val">DevOps · Kubernetes</p>
+                        </div>
+                        <div class="meta-block">
+                            <p class="meta-label">ano</p>
+                            <p class="meta-val">2024</p>
+                        </div>
+                        <div class="meta-block">
+                            <p class="meta-label">papel</p>
+                            <p class="meta-val">DevOps e backend — containerização, pipeline e cluster</p>
+                        </div>
+                        <div class="meta-block">
+                            <p class="meta-label">tecnologias</p>
+                            <div class="badges">
+                                <span class="badge">Python</span>
+                                <span class="badge">Flask</span>
+                                <span class="badge">PostgreSQL</span>
+                                <span class="badge">SQLAlchemy</span>
+                                <span class="badge">Docker</span>
+                                <span class="badge">Kubernetes</span>
+                                <span class="badge">GitHub Actions</span>
+                                <span class="badge">Prometheus</span>
+                            </div>
+                        </div>
+                        <div class="aside-actions">
+                        <a href="https://vitor-lr.github.io/Fake-Shop/" target="_blank" rel="noopener" class="btn btn--primary btn--block">
+                            <svg class="icon"><use href="#i-arrow-up-right"></use></svg>
+                            <span class="cta-full">Ver projeto</span><span class="cta-short">Projeto</span>
+                        </a>
+                        <a href="https://github.com/Vitor-LR/Fake-Shop" target="_blank" rel="noopener" class="btn btn--ghost btn--block">
+                            <svg class="icon"><use href="#i-github"></use></svg>
+                            <span class="cta-full">Ver código</span><span class="cta-short">Código</span>
+                        </a>
+                    </div>
+                    </aside>
+                </div>
+            </div>
+        </section>
+    </main>
+
+        <!-- Barra de progresso de leitura -->
+    <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
+
+    <footer class="footer">
+        <div class="container">
+            <a href="../index.html#hero" class="footer-brand">vitor<span class="logo-dim">.rocha</span></a>
+            <p class="copyright">© <span data-year>2026</span> Vitor Lombard Rocha — Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Lightbox das screenshots -->
+    <div class="lightbox" id="lightbox" aria-hidden="true">
+        <div class="lightbox-frame" role="dialog" aria-modal="true" aria-label="Screenshot ampliada">
+            <button class="lightbox-close" type="button" aria-label="Fechar (Esc)">
+                <svg class="icon"><use href="#i-x"></use></svg>
+            </button>
+            <img alt="">
+        </div>
+    </div>
+
+    <script src="../assets/js/i18n.js" defer></script>
+    <script src="../assets/js/particles.js" defer></script>
+    <script src="../assets/js/main.js" defer></script>
+    <script src="../assets/js/elastic-scroll.js" defer></script>
+    <script src="../assets/js/gallery-modal.js" defer></script>
+</body>
+
+</html>
