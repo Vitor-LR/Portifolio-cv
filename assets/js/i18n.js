@@ -77,6 +77,11 @@
             'My goal is to deliver high-quality solutions, with clean and maintainable code, that help the product and the company grow on solid ground. I am always studying something new at the frontier between data and infrastructure.',
         'Além da parte técnica, possuo experiência com atendimento ao público e rotinas administrativas, o que fortaleceu minha capacidade de comunicação, autonomia e responsabilidade no trabalho.':
             'Beyond the technical side, I have experience with customer service and administrative routines, which strengthened my communication skills, autonomy and sense of responsibility at work.',
+
+        'ler mais': 'read more',
+        'ler menos': 'read less',
+
+
         '// em números': '// in numbers',
         'anos programando': 'years programming',
         'projetos realizados': 'projects built',
